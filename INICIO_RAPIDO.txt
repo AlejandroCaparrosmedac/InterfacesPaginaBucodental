@@ -1,0 +1,126 @@
+# Instrucciones de Inicio - Sistema Bucodental
+
+## Paso 1: Verifica que XAMPP esté corriendo
+
+1. Abre XAMPP Control Panel
+2. Inicia **Apache**
+3. Inicia **MySQL**
+
+## Paso 2: Inicializa la Base de Datos (primera vez solamente)
+
+1. Abre tu navegador (Chrome, Firefox, Edge, etc.)
+2. Ve a: `http://localhost/InterfacesPaginaBucodental/init_db.php`
+3. Deberías ver un mensaje de confirmación similar a:
+
+```json
+{
+  "success": true,
+  "mensajes": [
+    "✓ Base de datos 'bucodental' verificada/creada",
+    "✓ Tabla 'administradores' verificada/creada",
+    "✓ Tabla 'citas' verificada/creada",
+    "✓ Tabla 'servicios' verificada/creada",
+    "✓ Usuario admin creado (usuario: 'admin', contraseña: '1234')"
+  ]
+}
+```
+
+Si ves este mensaje, ¡todo está listo!
+
+## Paso 3: Accede a la Aplicación
+
+### Página Principal (Pacientes)
+```
+http://localhost/InterfacesPaginaBucodental/Index.html
+```
+
+Desde aquí pueden:
+- **Pedir una cita**: Seleccionar fecha, hora, sillón y datos personales
+- **Buscar su cita**: Ingresando su email
+- **Ver recomendaciones**: Tips de higiene bucodental
+
+### Panel de Administración
+```
+http://localhost/InterfacesPaginaBucodental/admin.html
+```
+
+**Credenciales por defecto**:
+- Usuario: `admin`
+- Contraseña: `1234`
+
+**⚠️ Seguridad**: Cambia la contraseña tan pronto como sea posible.
+
+---
+
+## Solución de Problemas
+
+### Error: "No se puede conectar a la base de datos"
+- ✓ Verifica que MySQL esté activo en XAMPP
+- ✓ Verifica que el usuario/contraseña en `config.php` sean correctos
+
+### Error 404 en api.php
+- ✓ Verifica que la carpeta esté en `C:\xampp\htdocs\InterfacesPaginaBucodental\`
+- ✓ Reinicia Apache en XAMPP
+
+### Las citas no se guardan
+- ✓ Abre `http://localhost/phpmyadmin`
+- ✓ Verifica que la BD `bucodental` existe
+- ✓ Comprueba que la tabla `citas` existe
+
+### ¿Olvidaste la contraseña del admin?
+
+#### Opción 1: Restablecerla a '1234'
+1. Abre `http://localhost/phpmyadmin`
+2. Accede a la BD `bucodental`
+3. Ve a la tabla `administradores`
+4. Haz clic en editar el usuario `admin`
+5. En el campo `contraseña`, copia este hash:
+```
+$2y$10$KyM8r9Z5/sZQw8Z8QyZ8QeVzPz7wX4nK9m2C5p8V3r0H1k7J9w0T6
+```
+(Este es el hash de '1234' en bcrypt)
+
+6. Haz clic en "Guardar"
+
+#### Opción 2: Crear un nuevo usuario admin
+Contacta al administrador del sistema para crear un nuevo usuario con permisos.
+
+---
+
+## Archivos Importantes
+
+```
+C:\xampp\htdocs\InterfacesPaginaBucodental\
+│
+├── Index.html          ← Página principal (donde entran los pacientes)
+├── admin.html          ← Panel de administración
+│
+├── config.php          ← Configuración de la BD
+├── init_db.php         ← Script para crear BD y tablas
+├── api.php             ← Backend (API REST)
+│
+├── js/
+│   ├── app.js          ← Lógica de página principal
+│   ├── admin.js        ← Lógica de panel admin
+│   └── config.js       ← Configuración
+│
+├── css/
+│   └── estilos.css     ← Estilos visuales
+│
+├── img/                ← Imágenes (logo, etc)
+│
+└── SETUP.md            ← Documentación técnica
+```
+
+---
+
+## Contacto y Soporte
+
+Si encuentras problemas o necesitas ayuda, verifica:
+1. La documentación en `SETUP.md`
+2. Los logs de error en la consola del navegador (F12)
+3. El panel de control de XAMPP
+
+---
+
+**¡Sistema listo para usar!** 🦷

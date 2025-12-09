@@ -1,0 +1,267 @@
+<!Doctype html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Higiene bucodental</title>
+    <link rel="stylesheet" href="css/estilos.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Flatpickr para calendario interactivo -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <!-- SheetJS para Excel -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.min.js"></script>
+</head>
+
+<body>
+    <header class=" text-center text-white py-4 mb-0 p-0 fixed-top">
+        <nav class="navbar navbar-expand-lg  navbar-dark w-100 p-0 m-0 ">
+            <div class="container-fluid d-flex align-items-center">
+                <img src="img/sonrisa.png" alt="Logo" class="d-inline-block align-middle me-2" id="logo">
+                <img src="img/logoDavante.svg" alt="LogoDavante" class="d-inline-block align-middle" id="logoDavante">
+                <a class="navbar-brand" href="#"></a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false"
+                    aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNavDropdown">
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a class="nav-link active" aria-current="page" href="#" id="inicio">Inicio</a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                                aria-expanded="false" id="servicios">
+                                Servicios
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="#pedirCita">Pedir cita</a></li>
+                                <li><a class="dropdown-item" href="#tituloConsejos">Recomendaciones</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <input class="form-control me-2 ms-auto" type="search" placeholder="Buscar" aria-label="Buscar"
+                        id="buscador">
+                    <button class="btn btn-outline-light ms-2" type="submit" id="botonBuscar">Buscar</button>
+                    <a href="admin.html" class="btn btn-warning ms-2" title="Acceder al panel de administración">
+                        <i class="bi bi-shield-lock"></i> Admin
+                    </a>
+                </div>
+            </div>
+        </nav>
+        <div class="py-4 text-white text-center w-100" id="contenedorNav">
+            <h1 id="tituloGrande">Higiene Bucodental</h1>
+            <p>Consejos para mantener una sonrisa saludable</p>
+        </div>
+    </header>
+    <main class="container my-5 text-center">
+        <div class="carousel-text-overlay">
+            <p id="textoCarrousel" class="lead">“Las mejores sonrisas comienzan con grandes profesionales en formación.”
+            </p>
+        </div>
+        <div id="carouselExample" class="carousel slide " data-bs-ride="carousel">
+            <div class="carousel-inner">
+                <div class="carousel-item active">
+                    <img src="img/imagen1.jpg" class="d-block " alt="..." id="img1">
+                </div>
+                <div class="carousel-item">
+                    <img src="img/imagen2.jpg" class="d-block " alt="..." id="img2">
+                </div>
+                <div class="carousel-item">
+                    <img src="img/imagen3.png" class="d-block " alt="..." id="img3">
+                </div>
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#carouselExample" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+            </button>
+        </div><br><br>
+        <hr>
+        <div class="text-center my-5">
+            <h2 class="mb-4 " id="tituloConsejos">Importancia de la higiene bucodental</h2>
+            <p class="lead" id="parrafoConsejos">Mantener una buena higiene bucodental es esencial para prevenir
+                enfermedades dentales y mantener una sonrisa saludable. Una correcta rutina de cuidado dental no solo
+                mejora la apariencia de los dientes, sino que también contribuye a la salud general del cuerpo.</p>
+            <section id="seccionConsejos">
+                <h2 class="mb-4  lead fw-bold" id="titulo2Consejos">Consejos para una buena higiene bucodental</h2>
+                <ul class="list-group">
+                    <li class="list-group-item lead">Cepíllate los dientes al menos dos veces al día con una pasta
+                        dental con flúor.</li>
+                    <li class="list-group-item lead">Usa hilo dental diariamente para eliminar la placa entre los
+                        dientes.</li>
+                    <li class="list-group-item lead">Limita el consumo de alimentos y bebidas azucaradas.</li>
+                    <li class="list-group-item lead">Visita a tu dentista regularmente para chequeos y limpiezas
+                        profesionales.</li>
+                    <li class="list-group-item lead">Evita el tabaco, ya que puede causar enfermedades de las encías y
+                        cáncer oral.</li>
+                </ul>
+            </section>
+        </div><br><br>
+        <hr>
+                
+        </section>
+        <section id="pedirCita">
+            <h2 class="mb-4 text-center py-4 lead" id="textoPedirCita">Pedir Cita / Consultar Cita</h2>
+            
+            <div class="container my-5 d-flex justify-content-center gap-3 flex-wrap">
+                <button type="button" class="btn btn-primary btn-lg" id="botonPedirCita" data-bs-toggle="modal" data-bs-target="#modalPedirCita">
+                    <i class="bi bi-calendar-check"></i> Pedir Cita
+                </button>
+                <button type="button" class="btn btn-info btn-lg" id="botonConsultarCita" data-bs-toggle="modal" data-bs-target="#modalConsultarCita">
+                    <i class="bi bi-search"></i> Consultar Cita
+                </button>
+            </div>
+        </section>
+
+        <!-- Modal para Pedir Cita -->
+        <div class="modal fade" id="modalPedirCita" tabindex="-1" aria-labelledby="modalPedirCitaLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalPedirCitaLabel">Pedir Cita</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="formularioCita" class="p-2">
+                            <!-- Fecha (Flatpickr) -->
+                            <div class="mb-3">
+                                <label for="fechaCita" class="form-label text-primary lead">Día disponible (Viernes)</label>
+                                <input type="text" class="form-control" id="fechaCita" placeholder="Selecciona un viernes" required>
+                                <small class="text-muted">Solo se pueden seleccionar viernes</small>
+                            </div>
+
+                            <!-- Hora -->
+                            <div class="mb-3">
+                                <label for="horaCita" class="form-label text-primary lead">Seleccione una hora</label>
+                                <select class="form-select" id="horaCita" required>
+                                    <option selected disabled>Elige una hora</option>
+                                    <option>15:15</option>
+                                    <option>15:55</option>
+                                    <option>16:35</option>
+                                    <option>17:15</option>
+                                    <option>17:55</option>
+                                    <option>18:35</option>
+                                    <option>19:15</option>
+                                    <option>19:55</option>
+                                    <option>20:35</option>
+                                </select>
+                            </div>
+
+                            <!-- Sillón -->
+                            <div class="mb-3">
+                                <label class="form-label text-primary lead">Selecciona un sillón</label>
+                                <div class="d-flex gap-3 justify-content-center">
+                                    <button type="button" class="btn sillon-btn" id="sillonRojo" style="background-color: #DC3545; color: white; width: 120px; font-weight: bold;">
+                                        <i class="bi bi-check-circle"></i> Rojo
+                                    </button>
+                                    <button type="button" class="btn sillon-btn" id="sillonAzul" style="background-color: #0D6EFD; color: white; width: 120px; font-weight: bold;">
+                                        <i class="bi bi-check-circle"></i> Azul
+                                    </button>
+                                    <button type="button" class="btn sillon-btn" id="sillonAmarillo" style="background-color: #FFC107; color: black; width: 120px; font-weight: bold;">
+                                        <i class="bi bi-check-circle"></i> Amarillo
+                                    </button>
+                                </div>
+                                <input type="hidden" id="sillonCita" required>
+                            </div>
+
+                            <!-- Nombre completo -->
+                            <div class="mb-3">
+                                <label for="nombreCita" class="form-label text-primary lead">Nombre completo</label>
+                                <input type="text" class="form-control" id="nombreCita" placeholder="Tu nombre completo" required>
+                                <div class="invalid-feedback" id="errorNombre"></div>
+                            </div>
+
+                            <!-- Email -->
+                            <div class="mb-3">
+                                <label for="emailCita" class="form-label text-primary lead">Correo electrónico</label>
+                                <input type="email" class="form-control" id="emailCita" placeholder="tu@alu.medac.es" required>
+                                <small class="text-muted">Solo se aceptan correos: @alu.medac.es</small>
+                                <div class="invalid-feedback" id="errorEmail"></div>
+                            </div>
+
+                            <!-- Información de disponibilidad -->
+                            <div id="avisoDisponibilidad" class="alert alert-info small" style="display: none;">
+                                <i class="bi bi-info-circle"></i>
+                                <strong>Información de disponibilidad:</strong>
+                                <div id="detalleDisponibilidad" style="margin-top: 0.5rem;"></div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-primary" id="botonConfirmarCita">Confirmar Cita</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal para Consultar Cita -->
+        <div class="modal fade" id="modalConsultarCita" tabindex="-1" aria-labelledby="modalConsultarCitaLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalConsultarCitaLabel">Consultar Cita</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="formularioConsulta">
+                            <div class="mb-3">
+                                <label for="emailConsulta" class="form-label text-primary lead">Correo electrónico</label>
+                                <input type="email" class="form-control" id="emailConsulta" placeholder="tu@alu.medac.es" required>
+                                <small class="text-muted">Ingresa tu correo para consultar tu cita</small>
+                            </div>
+                        </form>
+                        <div id="resultadoConsulta"></div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                        <button type="button" class="btn btn-primary" id="botonBuscarCita">Buscar Cita</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+    <footer class=" text-white py-3 mt-5">
+        <p class="text-center mt-2 mb-0">&copy; 2024 Higiene Bucodental. Todos los derechos reservados.</p>
+        <div class="container-fluid d-flex justify-content-end align-items-center text-white">
+            <p class="mb-0 me-3">Síguenos en nuestras redes sociales</p>
+            <div class="social-icons">
+                <div class="social-icons">
+                    <a href="https://www.facebook.com/" target="_blank" class="text-white me-3">
+                        <i class="bi bi-facebook" style="font-size: 1.5rem;"></i>
+                    </a>
+                    <a href="https://www.instagram.com/" target="_blank" class="text-white me-3">
+                        <i class="bi bi-instagram" style="font-size: 1.5rem;"></i>
+                    </a>
+                    <a href="https://twitter.com/" target="_blank" class="text-white">
+                        <i class="bi bi-twitter" style="font-size: 1.5rem;"></i>
+                    </a>
+                </div>
+
+            </div>
+    </footer>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+        crossorigin="anonymous"></script>
+    <!-- Flatpickr script -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <!-- Script de configuración (personalizable) -->
+    <script src="js/config.js"></script>
+    <!-- Script principal de la aplicación -->
+    <script src="js/app.js"></script>
+    <!-- Script de datos de prueba (opcional) -->
+    <!-- <script src="js/prueba.js"></script> -->
+    
+</body>
+
+</html>

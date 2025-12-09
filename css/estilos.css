@@ -1,0 +1,416 @@
+header{
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
+    margin-top: -2rem;
+    background-color: #2A6FB6;
+}
+.navbar{
+    padding-top: 0% !important;
+    padding-bottom: 0% !important;
+    height: 80px;
+    background-color: #2A6FB6;
+    
+}
+html {
+  scroll-behavior: smooth;
+}
+
+
+#servicios{
+    font-weight: bold;
+
+}
+#contenedorNav{
+    margin-top: 1rem;
+    padding-bottom: 1rem;
+    margin-top: 0% !important;
+    height: 70px;
+    
+}
+
+#inicio{
+    margin-left: 5rem;
+    font-weight: bold;
+    padding-left: 0 !important;
+}
+#buscador{
+    max-width: 200px;
+    margin-right: 1rem;
+}
+#tituloGrande{
+    text-align: center;
+    margin-top: -2rem;
+    
+}
+#logo{
+    width: 100px;
+    height: auto;
+    margin: 0;
+
+}
+#seccionConsejos{
+    background-color: #d5eaff;
+    padding: 2rem;
+    border-radius: 5px;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    max-width: 50rem;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 5rem;
+    
+}
+#formulario{
+    background-color: #d5eaff;
+    max-width: 50rem;
+    margin-left: auto;
+    margin-right: auto; 
+    margin-bottom: 10rem;
+}
+#botonForm{
+    background-color: #2A6FB6;
+    color: white;
+    width:  18em;
+    margin-left: 12rem;
+    margin-right: 12rem;
+    margin-top: 2rem;
+    
+}
+#img3 ,#img2, #img1{
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 80%;
+    height: 500px;
+    object-fit: cover;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 8rem;
+    margin-top: 2rem;
+    
+    }
+    #img3{
+        width: 80%;
+    }
+    #carrouselExample{
+        width: 100%;
+        margin-left: auto;
+        margin-right: auto;
+        
+    }
+    #textoCarrousel{
+        background-color: #d5eaff;
+        color:#2A6FB6;
+        font-weight: bold;
+        padding: 1rem;
+        border-radius: 5px;
+        margin-bottom: 2rem;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        margin-top: 230px;
+    }
+    .carousel-control-prev-icon,
+    .carousel-control-next-icon {
+    filter: invert(36%) sepia(79%) saturate(4341%) hue-rotate(205deg) brightness(96%) contrast(101%);
+    color: #2A6FB6;
+}
+
+   #textoPedirCita{
+    text-align: center;
+    font-weight: bold;
+    font-size: 2rem;
+    color: #2A6FB6;
+   }
+   #logoDavante{
+    width: 150px;
+    height: auto;
+    margin: 0;
+   }
+   
+   #tituloConsejos{
+    color: #2A6FB6;
+    font-weight: bold;
+   }
+   #parrafoConsejos{
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+    color:#2A6FB6
+   }
+   #titulo2Consejos{
+    color: #2A6FB6;
+    margin-bottom: 1rem;
+   }
+   footer{
+    background-color: #2A6FB6;
+   }
+   label{
+    color: #2A6FB6;
+    font-weight: bold;
+   }
+  
+
+    
+#contenedorCalendario{
+    margin-bottom: 2rem;
+    align-items: center;
+   
+}   
+#CardCalendario{
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+    padding: 1rem;
+    align-items: center;
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 600px;
+    background-color: #d5eaff;
+    margin-top: -4rem;
+}
+#Tarjeta{
+    text-align: center;
+    background-color: aliceblue;
+    color:#2A6FB6;
+}
+#tituloCalendario{
+    color: #2A6FB6;
+    font-weight: bold;
+    margin: 10px;
+    padding: 10px;
+    text-align: center;
+}
+
+/* ============================================
+   ESTILOS PARA MODALES Y BOTONES
+   ============================================ */
+
+/* Botones de pedir y consultar cita */
+#botonPedirCita,
+#botonConsultarCita {
+    background-color: #2A6FB6;
+    border-color: #2A6FB6;
+    color: white;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+#botonPedirCita:hover,
+#botonConsultarCita:hover {
+    background-color: #1e52a8;
+    border-color: #1e52a8;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(42, 111, 182, 0.3);
+}
+
+#botonConsultarCita {
+    background-color: #17a2b8;
+    border-color: #17a2b8;
+}
+
+#botonConsultarCita:hover {
+    background-color: #138496;
+    border-color: #138496;
+}
+
+/* Estilos del modal */
+.modal-header {
+    background-color: #2A6FB6;
+    color: white;
+}
+
+.modal-header .modal-title {
+    font-weight: bold;
+    font-size: 1.3rem;
+}
+
+.modal-body {
+    background-color: #f8f9fa;
+}
+
+.modal-body .form-label {
+    color: #2A6FB6;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+}
+
+.modal-body .form-control,
+.modal-body .form-select {
+    border-color: #2A6FB6;
+    border-width: 1px;
+}
+
+.modal-body .form-control:focus,
+.modal-body .form-select:focus {
+    border-color: #2A6FB6;
+    box-shadow: 0 0 0 0.2rem rgba(42, 111, 182, 0.25);
+}
+
+.modal-footer {
+    background-color: #f8f9fa;
+    border-top: 1px solid #dee2e6;
+}
+
+.modal-footer .btn-primary {
+    background-color: #2A6FB6;
+    border-color: #2A6FB6;
+}
+
+.modal-footer .btn-primary:hover {
+    background-color: #1e52a8;
+    border-color: #1e52a8;
+}
+
+/* Validaciones en formularios */
+.form-control.is-invalid,
+.form-select.is-invalid {
+    border-color: #dc3545;
+    background-image: none;
+}
+
+.form-control.is-invalid:focus,
+.form-select.is-invalid:focus {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+}
+
+.invalid-feedback {
+    display: block;
+    color: #dc3545;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+/* Alertas */
+.alert {
+    border-radius: 5px;
+    margin-bottom: 1rem;
+    animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Flatpickr estilos personalizados */
+.flatpickr-calendar {
+    background-color: #fff;
+    border: 1px solid #2A6FB6;
+    border-radius: 5px;
+}
+
+.flatpickr-day.selected {
+    background-color: #2A6FB6;
+    border-color: #2A6FB6;
+}
+
+.flatpickr-day.today {
+    border-color: #2A6FB6;
+    color: #2A6FB6;
+    font-weight: bold;
+}
+
+.flatpickr-day:hover {
+    background-color: #d5eaff;
+    color: #2A6FB6;
+}
+
+.flatpickr-prev,
+.flatpickr-next {
+    color: #2A6FB6;
+}
+
+.flatpickr-prev:hover,
+.flatpickr-next:hover {
+    color: #1e52a8;
+}
+
+/* Sección de botones de cita */
+#pedirCita > div {
+    padding: 2rem 0;
+    background: linear-gradient(135deg, #f8f9fa 0%, #fff 100%);
+    border-radius: 5px;
+    margin: 2rem auto;
+}
+
+/* ============================================
+   ESTILOS PARA DISPONIBILIDAD DE CITAS
+   ============================================ */
+
+/* Opciones deshabilitadas en select */
+select option:disabled {
+    color: #999;
+    background-color: #f5f5f5;
+}
+
+select:disabled,
+select option:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Select deshabilitado */
+.form-select:disabled {
+    background-color: #e9ecef;
+    cursor: not-allowed;
+}
+
+/* Advertencia de disponibilidad */
+.alert-disponibilidad {
+    margin-bottom: 1rem;
+    border-left: 4px solid #ffc107;
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+.alert-disponibilidad strong {
+    font-weight: bold;
+}
+
+/* Badge para indicar estado */
+.badge-ocupado {
+    background-color: #dc3545;
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 3px;
+    font-size: 0.75rem;
+    margin-left: 0.5rem;
+}
+
+.badge-disponible {
+    background-color: #28a745;
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 3px;
+    font-size: 0.75rem;
+    margin-left: 0.5rem;
+}
+
+/* ============================================
+   ESTILOS PARA BOTONES DE SILLÓN
+   ============================================ */
+
+.sillon-btn {
+    border: 2px solid transparent;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+.sillon-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    border-color: rgba(0, 0, 0, 0.1);
+}
+
+.sillon-btn.active {
+    border: 2px solid rgba(0, 0, 0, 0.3);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+    transform: scale(1.05);
+}
