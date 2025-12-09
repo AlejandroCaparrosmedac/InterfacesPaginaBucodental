@@ -216,17 +216,31 @@ function crearCita($conexion, $datos) {
         return;
     }
 
-    // Verificar disponibilidad de hora
-    $stmt = $conexion->prepare("SELECT id FROM citas WHERE fecha = ? AND hora = ? AND estado != 'cancelada'");
-    $stmt->bind_param("ss", $fecha, $hora);
+    // Validar que email no tenga cita en el mismo día
+    $stmt = $conexion->prepare("SELECT id FROM citas WHERE email = ? AND fecha = ? AND estado != 'cancelada'");
+    $stmt->bind_param("ss", $email, $fecha);
     $stmt->execute();
     
     if ($stmt->get_result()->num_rows > 0) {
-        $respuesta = ['success' => false, 'message' => 'La hora seleccionada ya está reservada'];
+        $respuesta = ['success' => false, 'message' => 'Ya tienes una cita registrada para este día'];
         $stmt->close();
         return;
     }
     $stmt->close();
+
+    // Verificar disponibilidad del sillon en esa fecha y hora
+    if (!empty($sillon)) {
+        $stmt = $conexion->prepare("SELECT id FROM citas WHERE fecha = ? AND hora = ? AND sillon = ? AND estado != 'cancelada'");
+        $stmt->bind_param("sss", $fecha, $hora, $sillon);
+        $stmt->execute();
+        
+        if ($stmt->get_result()->num_rows > 0) {
+            $respuesta = ['success' => false, 'message' => 'El sillón '.$sillon.' ya está reservado para esta hora'];
+            $stmt->close();
+            return;
+        }
+        $stmt->close();
+    }
 
     // Insertar cita
     $stmt = $conexion->prepare("INSERT INTO citas (fecha, hora, nombre, email, sillon, notas, estado) 
