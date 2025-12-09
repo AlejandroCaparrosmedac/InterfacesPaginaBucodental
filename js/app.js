@@ -649,23 +649,31 @@ function mostrarInfoDisponibilidad(fecha) {
     }
 
     let html = '<ul style="margin: 0; padding-left: 1.5rem;">';
-    let horasDisponibles = 0;
+    let sillonesTotalesDisponibles = 0;
     
     CONFIG.horasDisponibles.forEach(hora => {
         const ocupada = estaHoraOcupada(fecha, hora);
         const estado = ocupada ? '❌ Completa' : '✅ Disponible';
         html += `<li>${hora} ${estado}</li>`;
-        if (!ocupada) horasDisponibles++;
+        
+        // Si la hora no está ocupada, contar cuántos sillones hay disponibles en esa hora
+        if (!ocupada) {
+            const sillonesDisponiblesEnHora = CONFIG.sillones.filter(sillon => 
+                esSillonDisponible(fecha, hora, sillon)
+            ).length;
+            sillonesTotalesDisponibles += sillonesDisponiblesEnHora;
+        }
     });
     
     html += '</ul>';
     
-    if (horasDisponibles > 0) {
-        detalleDiv.innerHTML = `${horasDisponibles} horas disponibles. ${html}`;
+    if (sillonesTotalesDisponibles > 0) {
+        const pluralSillon = sillonesTotalesDisponibles === 1 ? 'sillón disponible' : 'sillones disponibles';
+        detalleDiv.innerHTML = `${sillonesTotalesDisponibles} ${pluralSillon} en total. ${html}`;
         avisoDiv.className = 'alert alert-success small';
         avisoDiv.style.display = 'block';
     } else {
-        detalleDiv.innerHTML = `No hay horas disponibles este día. ${html}`;
+        detalleDiv.innerHTML = `No hay sillones disponibles este día. ${html}`;
         avisoDiv.className = 'alert alert-danger small';
         avisoDiv.style.display = 'block';
     }
