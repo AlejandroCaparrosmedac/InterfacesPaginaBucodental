@@ -105,6 +105,10 @@ function configurarEventos() {
         modalPedirCita.addEventListener('show.bs.modal', function() {
             setTimeout(() => {
                 actualizarDisponibilidadHoras();
+                // También actualizar sillones si hay hora seleccionada
+                if (document.getElementById('horaCita').value) {
+                    actualizarDisponibilidadSillones();
+                }
             }, 200);
         });
     }
@@ -640,13 +644,16 @@ function mostrarInfoDisponibilidad(fecha) {
  * Selecciona un sillon y actualiza el estado visual de los botones
  */
 function seleccionarSillon(nombreSillon, idBoton) {
-    // Verificar si el boton esta deshabilitado (sillon ocupado)
     const boton = document.getElementById(idBoton);
     
+    console.log(`Intento de seleccionar ${nombreSillon}, disabled: ${boton.disabled}, opacity: ${boton.style.opacity}`);
+    
+    // Verificar si el boton esta deshabilitado (sillon ocupado)
     if (boton.disabled) {
+        console.log(`${nombreSillon} esta deshabilitado`);
         mostrarAlerta('danger', 'Sillon No Disponible', 
             `El sillon ${nombreSillon} ya ha sido reservado para esta hora. Por favor selecciona otro.`);
-        return; // No permitir seleccion si esta ocupado
+        return;
     }
     
     // Actualizar el valor del input hidden
@@ -690,18 +697,23 @@ function actualizarDisponibilidadSillones() {
         if (disponible) {
             // Sillón disponible - totalmente funcional
             boton.disabled = false;
-            boton.style.setProperty('opacity', '1', 'important');
+            boton.style.cssText = boton.style.cssText.replace(/opacity\s*:\s*[^;]*;?/i, '');
+            boton.style.opacity = '1';
             boton.style.cursor = 'pointer';
+            boton.style.filter = 'none';
             boton.classList.remove('sillon-disabled');
             boton.title = `Sillon ${sillon} disponible`;
+            console.log(`${sillon} disponible - opacidad: ${boton.style.opacity}`);
         } else {
             // Sillón ocupado - deshabilitado pero sin cambiar color
             boton.disabled = true;
-            boton.style.setProperty('opacity', '0.4', 'important');
+            boton.style.opacity = '0.35';
             boton.style.cursor = 'not-allowed';
+            boton.style.filter = 'brightness(0.7)';
             boton.classList.add('sillon-disabled');
             boton.title = `Sillon ${sillon} - RESERVADO`;
             sillonesBloqueados++;
+            console.log(`${sillon} RESERVADO - opacidad: ${boton.style.opacity}, filter: ${boton.style.filter}`);
             
             // Si estaba seleccionado, deseleccionar
             if (document.getElementById('sillonCita').value === sillon) {
@@ -710,8 +722,6 @@ function actualizarDisponibilidadSillones() {
             }
         }
     });
-
-    console.log(`Disponibilidad de sillones actualizada para ${fecha} a las ${hora} (${sillonesBloqueados} ocupados)`);
 
     // Mostrar aviso si no hay sillones disponibles
     if (sillonesBloqueados === CONFIG.sillones.length) {
