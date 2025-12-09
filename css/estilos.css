@@ -401,9 +401,13 @@ select option:disabled {
     transition: all 0.3s ease;
     font-size: 1rem;
     cursor: pointer;
+    min-height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.sillon-btn:hover {
+.sillon-btn:hover:not(:disabled) {
     transform: translateY(-2px);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     border-color: rgba(0, 0, 0, 0.1);
@@ -418,8 +422,11 @@ select option:disabled {
 #sillonRojo.sillon-disabled,
 #sillonAzul.sillon-disabled,
 #sillonAmarillo.sillon-disabled {
-    opacity: 0.35 !important;
+    opacity: 0.8 !important;
     cursor: not-allowed !important;
     pointer-events: none !important;
-    filter: brightness(0.7) !important;
+    filter: grayscale(100%) !important;
+    background-color: #6c757d !important;
+    color: white !important;
+    border-color: #5a6268 !important;
 }

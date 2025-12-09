@@ -16,6 +16,13 @@ let citasCache = [];
 let ultimaCargaCitas = 0;
 const CACHE_DURACION = 60000; // 1 minuto
 
+// Almacenar estilos originales de los sillones
+const estilosSillonesOriginales = {
+    'Rojo': { backgroundColor: '#DC3545', color: 'white' },
+    'Azul': { backgroundColor: '#0D6EFD', color: 'white' },
+    'Amarillo': { backgroundColor: '#FFC107', color: 'black' }
+};
+
 // ============================================
 // INICIALIZACIÓN
 // ============================================
@@ -75,14 +82,15 @@ function configurarEventos() {
     // Validaciones en tiempo real
     document.getElementById('nombreCita').addEventListener('blur', validarNombre);
     document.getElementById('emailCita').addEventListener('blur', validarEmail);
-
     // Eventos para actualizar disponibilidad
-    document.getElementById('fechaCita').addEventListener('change', function() {
+    document.getElementById('fechaCita').addEventListener('change', async function() {
+        await cargarCitasDelServidor();
         actualizarDisponibilidadHoras();
         limpiarSeleccionSillon();
     });
 
-    document.getElementById('horaCita').addEventListener('change', function() {
+    document.getElementById('horaCita').addEventListener('change', async function() {
+        await cargarCitasDelServidor();
         actualizarDisponibilidadSillones();
     });
 
@@ -102,7 +110,9 @@ function configurarEventos() {
     // Modal: limpiar al abrir
     const modalPedirCita = document.getElementById('modalPedirCita');
     if (modalPedirCita) {
-        modalPedirCita.addEventListener('show.bs.modal', function() {
+        modalPedirCita.addEventListener('show.bs.modal', async function() {
+            // Cargar citas frescas del servidor (forzar, sin usar caché)
+            await cargarCitasDelServidor(true);
             setTimeout(() => {
                 actualizarDisponibilidadHoras();
                 // También actualizar sillones si hay hora seleccionada
@@ -350,12 +360,13 @@ function guardarEnLocalStorage(cita) {
 
 /**
  * Carga las citas del servidor (con caché para evitar sobrecarga)
+ * @param {boolean} forzar - Si true, ignora el caché y recarga desde el servidor
  */
-async function cargarCitasDelServidor() {
+async function cargarCitasDelServidor(forzar = false) {
     const ahora = Date.now();
     
-    // Si el caché es reciente, usarlo
-    if (citasCache.length > 0 && (ahora - ultimaCargaCitas) < CACHE_DURACION) {
+    // Si el caché es reciente y no se fuerza, usarlo
+    if (!forzar && citasCache.length > 0 && (ahora - ultimaCargaCitas) < CACHE_DURACION) {
         return citasCache;
     }
 
@@ -716,27 +727,37 @@ function actualizarDisponibilidadSillones() {
     CONFIG.sillones.forEach(sillon => {
         const boton = document.getElementById(botonesSillon[sillon]);
         const disponible = esSillonDisponible(fecha, hora, sillon);
+        const estiloOriginal = estilosSillonesOriginales[sillon];
 
         if (disponible) {
-            // Sillón disponible - totalmente funcional
+            // Sillón disponible - restaurar estilos originales
             boton.disabled = false;
-            boton.style.cssText = boton.style.cssText.replace(/opacity\s*:\s*[^;]*;?/i, '');
             boton.style.opacity = '1';
             boton.style.cursor = 'pointer';
             boton.style.filter = 'none';
+            boton.style.backgroundColor = estiloOriginal.backgroundColor;
+            boton.style.color = estiloOriginal.color;
+            boton.style.fontWeight = 'bold';
             boton.classList.remove('sillon-disabled');
             boton.title = `Sillon ${sillon} disponible`;
-            console.log(`${sillon} disponible - opacidad: ${boton.style.opacity}`);
+            // Restaurar contenido original
+            boton.innerHTML = `<i class="bi bi-check-circle"></i> ${sillon}`;
+            console.log(`${sillon} disponible`);
         } else {
-            // Sillón ocupado - deshabilitado pero sin cambiar color
+            // Sillón ocupado - cambiar a color gris oscuro
             boton.disabled = true;
-            boton.style.opacity = '0.35';
+            boton.style.opacity = '0.8';
             boton.style.cursor = 'not-allowed';
-            boton.style.filter = 'brightness(0.7)';
+            boton.style.filter = 'grayscale(100%)';
+            boton.style.backgroundColor = '#6c757d'; // Gris Bootstrap
+            boton.style.color = 'white';
+            boton.style.fontWeight = 'bold';
             boton.classList.add('sillon-disabled');
             boton.title = `Sillon ${sillon} - RESERVADO`;
+            // Cambiar contenido para mostrar que está reservado
+            boton.innerHTML = `<i class="bi bi-x-circle"></i> RESERVADO`;
             sillonesBloqueados++;
-            console.log(`${sillon} RESERVADO - opacidad: ${boton.style.opacity}, filter: ${boton.style.filter}`);
+            console.log(`${sillon} RESERVADO`);
             
             // Si estaba seleccionado, deseleccionar
             if (document.getElementById('sillonCita').value === sillon) {

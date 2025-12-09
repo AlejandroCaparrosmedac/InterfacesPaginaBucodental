@@ -278,6 +278,10 @@ function obtenerCitas($conexion) {
     if ($resultado) {
         $citas = [];
         while ($fila = $resultado->fetch_assoc()) {
+            // Convertir hora de HH:MM:SS a HH:MM si es necesario
+            if (strlen($fila['hora']) > 5) {
+                $fila['hora'] = substr($fila['hora'], 0, 5);
+            }
             $citas[] = $fila;
         }
         $respuesta = ['success' => true, 'citas' => $citas];
