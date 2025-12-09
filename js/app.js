@@ -137,13 +137,13 @@ function validarFormularioCita() {
     }
 
     // Validar hora
-    if (!hora || hora === 'disabled') {
+    if (!hora) {
         mostrarError('horaCita', 'Por favor selecciona una hora');
         esValido = false;
     }
 
     // Validar sillón
-    if (!sillon || sillon === 'disabled') {
+    if (!sillon) {
         mostrarError('sillonCita', 'Por favor selecciona un sillón');
         esValido = false;
     }
@@ -296,8 +296,19 @@ async function guardarCita() {
             throw new Error(`HTTP error! status: ${respuesta.status}`);
         }
 
-        const datos = await respuesta.json();
-        console.log('Respuesta del servidor:', datos);
+        // Obtener texto de respuesta primero
+        const textoRespuesta = await respuesta.text();
+        console.log('Respuesta del servidor (texto):', textoRespuesta);
+
+        // Intentar parsear como JSON
+        let datos;
+        try {
+            datos = JSON.parse(textoRespuesta);
+        } catch (parseError) {
+            console.error('Error al parsear JSON. Respuesta recibida:', textoRespuesta);
+            mostrarAlerta('error', 'Error del servidor', 'El servidor devolvió una respuesta inválida. Por favor contacta al administrador.');
+            return;
+        }
 
         if (datos.success) {
             // Actualizar caché de citas antes de mostrar alerta
@@ -350,7 +361,19 @@ async function cargarCitasDelServidor() {
 
     try {
         const respuesta = await fetch(`${CONFIG.apiUrl}?action=obtener_citas`);
-        const datos = await respuesta.json();
+        
+        // Obtener texto de respuesta primero
+        const textoRespuesta = await respuesta.text();
+
+        // Intentar parsear como JSON
+        let datos;
+        try {
+            datos = JSON.parse(textoRespuesta);
+        } catch (parseError) {
+            console.error('Error al parsear JSON en cargarCitasDelServidor. Respuesta:', textoRespuesta);
+            citasCache = [];
+            return [];
+        }
 
         if (datos.success && Array.isArray(datos.citas)) {
             // Convertir formato de fecha de BD (YYYY-MM-DD) a formato de UI (DD/MM/YYYY)

@@ -25,6 +25,9 @@ $ruta = isset($_GET['action']) ? $_GET['action'] : '';
 // Respuesta por defecto
 $respuesta = ['success' => false, 'message' => 'Acción no válida'];
 
+// Envolver todo en try-catch para evitar errores HTML
+try {
+
 // ============================================
 // RUTAS API
 // ============================================
@@ -124,9 +127,16 @@ switch ($ruta) {
         $respuesta = ['success' => false, 'message' => 'Endpoint no encontrado'];
 }
 
+// Cerrar try-catch
+} catch (Exception $e) {
+    $respuesta = ['success' => false, 'message' => 'Error interno: ' . $e->getMessage()];
+}
+
 // Enviar respuesta
 echo json_encode($respuesta, JSON_UNESCAPED_UNICODE);
-$conexion->close();
+if (isset($conexion)) {
+    $conexion->close();
+}
 exit;
 
 // ============================================

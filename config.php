@@ -16,10 +16,17 @@ $conexion = new mysqli(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME, DB_PORT);
 
 // Verificar conexión
 if ($conexion->connect_error) {
-    die(json_encode([
-        'success' => false,
-        'message' => 'Error de conexión: ' . $conexion->connect_error
-    ]));
+    // Si estamos en un contexto de API, devolver JSON
+    if (isset($_GET['action']) || $_SERVER['REQUEST_METHOD'] === 'POST') {
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode([
+            'success' => false,
+            'message' => 'Error de conexión a la base de datos: ' . $conexion->connect_error
+        ]);
+    } else {
+        die('Error de conexión: ' . $conexion->connect_error);
+    }
+    exit;
 }
 
 // Establecer charset UTF-8
