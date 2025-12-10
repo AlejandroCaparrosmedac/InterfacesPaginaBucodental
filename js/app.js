@@ -27,7 +27,7 @@ const estilosSillonesOriginales = {
 // INICIALIZACIÓN
 // ============================================
 
-document.addEventListener('DOMContentLoaded', async function() {
+document.addEventListener('DOMContentLoaded', async function () {
     inicializarFlatpickr();
     configurarEventos();
     await cargarCitasDelServidor();
@@ -44,12 +44,12 @@ function inicializarFlatpickr() {
         minDate: 'today',
         locale: 'es',
         disable: [
-            function(date) {
+            function (date) {
                 // Deshabilitar todos los días excepto viernes (5)
                 return date.getDay() !== 5;
             }
         ],
-        onChange: function(selectedDates, dateStr, instance) {
+        onChange: function (selectedDates, dateStr, instance) {
             console.log('Fecha seleccionada:', dateStr);
         }
     });
@@ -61,19 +61,19 @@ function inicializarFlatpickr() {
 
 function configurarEventos() {
     // Botón confirmar cita
-    document.getElementById('botonConfirmarCita').addEventListener('click', function() {
+    document.getElementById('botonConfirmarCita').addEventListener('click', function () {
         if (validarFormularioCita()) {
             guardarCita();
         }
     });
 
     // Botón buscar cita
-    document.getElementById('botonBuscarCita').addEventListener('click', function() {
+    document.getElementById('botonBuscarCita').addEventListener('click', function () {
         buscarCita();
     });
 
     // Permitir Enter en los campos de búsqueda
-    document.getElementById('emailConsulta').addEventListener('keypress', function(e) {
+    document.getElementById('emailConsulta').addEventListener('keypress', function (e) {
         if (e.key === 'Enter') {
             buscarCita();
         }
@@ -82,35 +82,49 @@ function configurarEventos() {
     // Validaciones en tiempo real
     document.getElementById('nombreCita').addEventListener('blur', validarNombre);
     document.getElementById('emailCita').addEventListener('blur', validarEmail);
+
+    // Deshabilitar select de hora inicialmente
+    document.getElementById('horaCita').disabled = true;
+
     // Eventos para actualizar disponibilidad
-    document.getElementById('fechaCita').addEventListener('change', async function() {
+    document.getElementById('fechaCita').addEventListener('change', async function () {
         await cargarCitasDelServidor();
         actualizarDisponibilidadHoras();
-        limpiarSeleccionSillon();
+
+        // Habilitar select de hora
+        document.getElementById('horaCita').disabled = false;
+
+        // Resetear hora seleccionada
+        document.getElementById('horaCita').value = '';
+
+        // Limpiar selección de sillones (con delay para asegurar que el DOM esté listo)
+        setTimeout(() => {
+            limpiarSeleccionSillon();
+        }, 100);
     });
 
-    document.getElementById('horaCita').addEventListener('change', async function() {
+    document.getElementById('horaCita').addEventListener('change', async function () {
         await cargarCitasDelServidor();
         actualizarDisponibilidadSillones();
     });
 
     // Eventos para los botones de sillón
-    document.getElementById('sillonRojo').addEventListener('click', function() {
+    document.getElementById('sillonRojo').addEventListener('click', function () {
         seleccionarSillon('Rojo', 'sillonRojo');
     });
 
-    document.getElementById('sillonAzul').addEventListener('click', function() {
+    document.getElementById('sillonAzul').addEventListener('click', function () {
         seleccionarSillon('Azul', 'sillonAzul');
     });
 
-    document.getElementById('sillonAmarillo').addEventListener('click', function() {
+    document.getElementById('sillonAmarillo').addEventListener('click', function () {
         seleccionarSillon('Amarillo', 'sillonAmarillo');
     });
 
     // Modal: limpiar al abrir
     const modalPedirCita = document.getElementById('modalPedirCita');
     if (modalPedirCita) {
-        modalPedirCita.addEventListener('show.bs.modal', async function() {
+        modalPedirCita.addEventListener('show.bs.modal', async function () {
             // Cargar citas frescas del servidor (forzar, sin usar caché)
             await cargarCitasDelServidor(true);
             setTimeout(() => {
@@ -120,6 +134,12 @@ function configurarEventos() {
                     actualizarDisponibilidadSillones();
                 }
             }, 200);
+        });
+
+        // Modal: limpiar al cerrar (por cualquier método: X, cancelar, o confirmar)
+        modalPedirCita.addEventListener('hidden.bs.modal', function () {
+            limpiarFormulario();
+            limpiarSeleccionSillon();
         });
     }
 }
@@ -234,10 +254,10 @@ function validarEmail() {
 function validarEmailUnicoEnDia(fecha, email) {
     const citas = cargarCitasDelLocalStorage();
     const emailNormalizado = email.toLowerCase();
-    
+
     // Buscar si existe cita del mismo email para la misma fecha
-    const citaEnMismoDia = citas.find(cita => 
-        cita.email.toLowerCase() === emailNormalizado && 
+    const citaEnMismoDia = citas.find(cita =>
+        cita.email.toLowerCase() === emailNormalizado &&
         cita.fecha === fecha
     );
 
@@ -321,23 +341,42 @@ async function guardarCita() {
         }
 
         if (datos.success) {
-            // Actualizar caché de citas antes de mostrar alerta
+            // Actualizar caché de citas antes de mostrar confirmación
             await cargarCitasDelServidor();
-            
-            // Mostrar confirmación
-            mostrarAlerta('success', '¡Cita registrada exitosamente!', 
-                `Tu cita ha sido confirmada para el ${fecha} a las ${hora} en el Sillón ${sillon}.`);
 
-            // Limpiar formulario y cerrar modal
+            // Cerrar modal de pedir cita
+            const modalPedirCita = bootstrap.Modal.getInstance(document.getElementById('modalPedirCita'));
+            if (modalPedirCita) {
+                modalPedirCita.hide();
+            }
+
+            // Llenar datos del modal de confirmación
+            const fechaObj = new Date(fechaFormato + 'T00:00:00');
+            const fechaLegible = fechaObj.toLocaleDateString('es-ES', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            const fechaCapitalizada = fechaLegible.charAt(0).toUpperCase() + fechaLegible.slice(1);
+
+            document.getElementById('confirmFecha').textContent = fechaCapitalizada;
+            document.getElementById('confirmHora').textContent = hora;
+            document.getElementById('confirmSillon').textContent = sillon;
+            document.getElementById('confirmNombre').textContent = nombre;
+            document.getElementById('confirmEmail').textContent = email;
+
+            // Mostrar modal de confirmación
+            const modalConfirmacion = new bootstrap.Modal(document.getElementById('modalConfirmacionCita'));
+            modalConfirmacion.show();
+
+            // Limpiar formulario
             limpiarFormulario();
+
+            // Actualizar disponibilidad después de guardar
             setTimeout(() => {
-                const modal = bootstrap.Modal.getInstance(document.getElementById('modalPedirCita'));
-                if (modal) {
-                    modal.hide();
-                }
-                // Actualizar disponibilidad después de guardar
                 actualizarDisponibilidadHoras();
-            }, 2000);
+            }, 500);
         } else {
             mostrarAlerta('error', 'Error al registrar cita', datos.message || 'No se pudo guardar la cita.');
         }
@@ -364,7 +403,7 @@ function guardarEnLocalStorage(cita) {
  */
 async function cargarCitasDelServidor(forzar = false) {
     const ahora = Date.now();
-    
+
     // Si el caché es reciente y no se fuerza, usarlo
     if (!forzar && citasCache.length > 0 && (ahora - ultimaCargaCitas) < CACHE_DURACION) {
         return citasCache;
@@ -372,7 +411,7 @@ async function cargarCitasDelServidor(forzar = false) {
 
     try {
         const respuesta = await fetch(`${CONFIG.apiUrl}?action=obtener_citas`);
-        
+
         // Obtener texto de respuesta primero
         const textoRespuesta = await respuesta.text();
 
@@ -430,10 +469,49 @@ function limpiarFormulario() {
     document.getElementById('formularioCita').reset();
     document.getElementById('fechaCita').value = '';
     document.getElementById('horaCita').value = '';
+    document.getElementById('horaCita').disabled = true; // Deshabilitar hora hasta seleccionar fecha
     document.getElementById('sillonCita').value = '';
     document.getElementById('nombreCita').value = '';
     document.getElementById('emailCita').value = '';
     limpiarErrores();
+    limpiarSeleccionSillon();
+}
+
+/**
+ * Limpia la selección de sillón y restaura estilos originales
+ */
+function limpiarSeleccionSillon() {
+    // Remover clase active de todos los botones de sillón
+    document.querySelectorAll('.sillon-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+
+    // Restaurar estilos originales de cada sillón
+    CONFIG.sillones.forEach(sillon => {
+        const botonesSillon = {
+            'Rojo': 'sillonRojo',
+            'Azul': 'sillonAzul',
+            'Amarillo': 'sillonAmarillo'
+        };
+        const boton = document.getElementById(botonesSillon[sillon]);
+        const estiloOriginal = estilosSillonesOriginales[sillon];
+
+        if (boton) {
+            boton.disabled = false;
+            boton.style.opacity = '1';
+            boton.style.cursor = 'pointer';
+            boton.style.filter = 'none';
+            boton.style.backgroundColor = estiloOriginal.backgroundColor;
+            boton.style.color = estiloOriginal.color;
+            boton.style.fontWeight = 'bold';
+            boton.classList.remove('sillon-disabled');
+            boton.title = `Sillón ${sillon}`;
+            boton.innerHTML = `<i class="bi bi-check-circle"></i> ${sillon}`;
+        }
+    });
+
+    // Limpiar el valor del input hidden
+    document.getElementById('sillonCita').value = '';
 }
 
 // ============================================
@@ -607,7 +685,7 @@ function estaHoraOcupada(fecha, hora) {
 function actualizarDisponibilidadHoras() {
     const fecha = document.getElementById('fechaCita').value.trim();
     const selectHora = document.getElementById('horaCita');
-    
+
     if (!fecha) {
         return;
     }
@@ -642,7 +720,7 @@ function actualizarDisponibilidadHoras() {
 function mostrarInfoDisponibilidad(fecha) {
     const avisoDiv = document.getElementById('avisoDisponibilidad');
     const detalleDiv = document.getElementById('detalleDisponibilidad');
-    
+
     if (!fecha) {
         avisoDiv.style.display = 'none';
         return;
@@ -650,23 +728,23 @@ function mostrarInfoDisponibilidad(fecha) {
 
     let html = '<ul style="margin: 0; padding-left: 1.5rem;">';
     let sillonesTotalesDisponibles = 0;
-    
+
     CONFIG.horasDisponibles.forEach(hora => {
         const ocupada = estaHoraOcupada(fecha, hora);
         const estado = ocupada ? '❌ Completa' : '✅ Disponible';
         html += `<li>${hora} ${estado}</li>`;
-        
+
         // Si la hora no está ocupada, contar cuántos sillones hay disponibles en esa hora
         if (!ocupada) {
-            const sillonesDisponiblesEnHora = CONFIG.sillones.filter(sillon => 
+            const sillonesDisponiblesEnHora = CONFIG.sillones.filter(sillon =>
                 esSillonDisponible(fecha, hora, sillon)
             ).length;
             sillonesTotalesDisponibles += sillonesDisponiblesEnHora;
         }
     });
-    
+
     html += '</ul>';
-    
+
     if (sillonesTotalesDisponibles > 0) {
         const pluralSillon = sillonesTotalesDisponibles === 1 ? 'sillón disponible' : 'sillones disponibles';
         detalleDiv.innerHTML = `${sillonesTotalesDisponibles} ${pluralSillon} en total. ${html}`;
@@ -687,17 +765,17 @@ function mostrarInfoDisponibilidad(fecha) {
  */
 function seleccionarSillon(nombreSillon, idBoton) {
     const boton = document.getElementById(idBoton);
-    
+
     console.log(`Intento de seleccionar ${nombreSillon}, disabled: ${boton.disabled}, opacity: ${boton.style.opacity}`);
-    
+
     // Verificar si el boton esta deshabilitado (sillon ocupado)
     if (boton.disabled) {
         console.log(`${nombreSillon} esta deshabilitado`);
-        mostrarAlerta('danger', 'Sillon No Disponible', 
+        mostrarAlerta('danger', 'Sillon No Disponible',
             `El sillon ${nombreSillon} ya ha sido reservado para esta hora. Por favor selecciona otro.`);
         return;
     }
-    
+
     // Actualizar el valor del input hidden
     document.getElementById('sillonCita').value = nombreSillon;
 
@@ -731,7 +809,7 @@ function actualizarDisponibilidadSillones() {
     };
 
     let sillonesBloqueados = 0;
-    
+
     CONFIG.sillones.forEach(sillon => {
         const boton = document.getElementById(botonesSillon[sillon]);
         const disponible = esSillonDisponible(fecha, hora, sillon);
@@ -766,7 +844,7 @@ function actualizarDisponibilidadSillones() {
             boton.innerHTML = `<i class="bi bi-x-circle"></i> RESERVADO`;
             sillonesBloqueados++;
             console.log(`${sillon} RESERVADO`);
-            
+
             // Si estaba seleccionado, deseleccionar
             if (document.getElementById('sillonCita').value === sillon) {
                 document.getElementById('sillonCita').value = '';
@@ -777,7 +855,7 @@ function actualizarDisponibilidadSillones() {
 
     // Mostrar aviso si no hay sillones disponibles
     if (sillonesBloqueados === CONFIG.sillones.length) {
-        mostrarAlerta('danger', 'Sin disponibilidad', 
+        mostrarAlerta('danger', 'Sin disponibilidad',
             `No hay sillones disponibles para esta hora en la fecha seleccionada.`);
         document.getElementById('sillonCita').value = '';
     }
@@ -788,13 +866,6 @@ function actualizarDisponibilidadSillones() {
 /**
  * Limpia la selección del sillón cuando se cambia la fecha
  */
-function limpiarSeleccionSillon() {
-    document.getElementById('sillonCita').value = '';
-    // Remover clase active de todos los botones
-    document.querySelectorAll('.sillon-btn').forEach(btn => {
-        btn.classList.remove('active');
-    });
-}
 
 // ============================================
 // ALERTAS Y NOTIFICACIONES

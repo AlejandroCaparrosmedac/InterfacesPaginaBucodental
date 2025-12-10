@@ -13,7 +13,7 @@ const ADMIN_CONFIG = {
 // INICIALIZACIÓN
 // ============================================
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     verificarSesion();
     configurarEventos();
 });
@@ -27,13 +27,13 @@ document.addEventListener('DOMContentLoaded', function() {
  */
 function verificarSesion() {
     const sesion = JSON.parse(sessionStorage.getItem(ADMIN_CONFIG.sessionKey));
-    
+
     if (sesion && sesion.usuario && sesion.timestamp) {
         // Verificar que la sesión no haya expirado (24 horas)
         const ahora = Date.now();
         const tiempoTranscurrido = ahora - sesion.timestamp;
         const unDia = 24 * 60 * 60 * 1000;
-        
+
         if (tiempoTranscurrido < unDia) {
             mostrarPanelAdmin(sesion.usuario);
             return;
@@ -42,7 +42,7 @@ function verificarSesion() {
             sessionStorage.removeItem(ADMIN_CONFIG.sessionKey);
         }
     }
-    
+
     // Mostrar página de login
     mostrarLogin();
 }
@@ -73,7 +73,7 @@ async function iniciarSesion(usuario, contrasena) {
                 timestamp: Date.now()
             };
             sessionStorage.setItem(ADMIN_CONFIG.sessionKey, JSON.stringify(sesion));
-            
+
             // Mostrar panel
             mostrarPanelAdmin(datos.usuario, datos.nombre);
             return true;
@@ -141,15 +141,15 @@ async function cargarCitas() {
 }
 
 /**
- * Muestra las citas en la tabla
+ * Muestra las citas en la tabla agrupadas por fecha
  */
 function mostrarCitasEnTabla(citas) {
     const cuerpoTabla = document.getElementById('cuerpoTabla');
-    
+
     if (!citas || citas.length === 0) {
         cuerpoTabla.innerHTML = `
             <tr>
-                <td colspan="6" class="no-citas">
+                <td colspan="7" class="no-citas">
                     <div>
                         <i class="bi bi-inbox"></i>
                         <p>No hay citas programadas</p>
@@ -159,44 +159,116 @@ function mostrarCitasEnTabla(citas) {
         `;
         return;
     }
-    
+
+    // Migrar datos: añadir campo 'estado' si no existe
+    citas = citas.map(cita => ({
+        ...cita,
+        estado: cita.estado || 'pendiente'
+    }));
+
     // Ordenar citas por fecha y hora
     citas.sort((a, b) => {
         const dateA = new Date(a.fecha);
         const dateB = new Date(b.fecha);
-        if (dateA !== dateB) return dateA - dateB;
+        if (dateA.getTime() !== dateB.getTime()) return dateA - dateB;
         return a.hora.localeCompare(b.hora);
     });
-    
-    // Generar filas
-    cuerpoTabla.innerHTML = citas.map((cita) => {
+
+    // Agrupar citas por fecha
+    const citasPorFecha = {};
+    citas.forEach(cita => {
+        if (!citasPorFecha[cita.fecha]) {
+            citasPorFecha[cita.fecha] = [];
+        }
+        citasPorFecha[cita.fecha].push(cita);
+    });
+
+    // Generar HTML con agrupación por fecha
+    let htmlCompleto = '';
+
+    Object.keys(citasPorFecha).sort().forEach((fecha, grupoIndex) => {
+        const citasDelDia = citasPorFecha[fecha];
+
         // Convertir fecha YYYY-MM-DD a formato legible
-        const fechaObj = new Date(cita.fecha + 'T00:00:00');
-        const fechaFormato = fechaObj.toLocaleDateString('es-ES');
-        
-        return `
-        <tr>
-            <td><strong>${fechaFormato}</strong></td>
-            <td>${cita.hora}</td>
-            <td>
-                <span class="sillon-badge sillon-${(cita.sillon || '').toLowerCase()}">
-                    ${cita.sillon || '-'}
-                </span>
-            </td>
-            <td>${cita.nombre}</td>
-            <td><small>${cita.email}</small></td>
-            <td>
-                <button type="button" class="btn btn-sm btn-eliminar" data-id="${cita.id}" title="Eliminar cita">
-                    <i class="bi bi-trash"></i> Eliminar
-                </button>
-            </td>
-        </tr>
+        const fechaObj = new Date(fecha + 'T00:00:00');
+        const opciones = {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        };
+        const fechaFormato = fechaObj.toLocaleDateString('es-ES', opciones);
+
+        // Capitalizar primera letra del día de la semana
+        const fechaCapitalizada = fechaFormato.charAt(0).toUpperCase() + fechaFormato.slice(1);
+
+        // Fila de encabezado de fecha (COLLAPSIBLE + PDF BUTTON)
+        htmlCompleto += `
+            <tr class="fecha-grupo-header" data-fecha="${fecha}" onclick="toggleGrupoFecha('${fecha}')" style="cursor: pointer;">
+                <td colspan="7" style="background: linear-gradient(135deg, #2A6FB6 0%, #1e52a8 100%); color: white; padding: 12px 20px; font-weight: 700; font-size: 1.1rem; text-align: left; border: none;">
+                    <i class="bi bi-chevron-down arrow-icon" id="arrow-${fecha}"></i>
+                    <i class="bi bi-calendar-event"></i> ${fechaCapitalizada}
+                    <span style="float: right; font-size: 0.9rem; opacity: 0.9;">
+                        <button class="btn btn-sm btn-pdf-dia" data-fecha="${fecha}" onclick="event.stopPropagation(); descargarPDFPorDia('${fecha}')" title="Descargar PDF de este día">
+                            <i class="bi bi-file-earmark-pdf"></i> PDF
+                        </button>
+                        ${citasDelDia.length} cita${citasDelDia.length !== 1 ? 's' : ''}
+                    </span>
+                </td>
+            </tr>
         `;
-    }).join('');
-    
+
+        // Filas de citas para esta fecha
+        citasDelDia.forEach((cita, index) => {
+            const fechaSimple = fechaObj.toLocaleDateString('es-ES');
+            const esFilaPar = index % 2 === 0;
+            const colorFondo = esFilaPar ? '#f8f9fa' : '#ffffff';
+            const esPresente = cita.estado === 'presente';
+            const clasePresente = esPresente ? 'presente' : '';
+            const iconoEstado = esPresente ? 'bi-check-circle-fill' : 'bi-clock';
+            const textoEstado = esPresente ? 'Presente' : 'Pendiente';
+            const claseEstado = esPresente ? 'presente' : 'pendiente';
+
+            htmlCompleto += `
+            <tr class="cita-row ${clasePresente}" data-fecha="${fecha}" data-id="${cita.id}" style="background-color: ${colorFondo};">
+                <td style="padding-left: 30px;"><strong>${fechaSimple}</strong></td>
+                <td><strong style="color: #2A6FB6; font-size: 1.05rem;">${cita.hora}</strong></td>
+                <td>
+                    <span class="sillon-badge sillon-${(cita.sillon || '').toLowerCase()}">
+                        ${cita.sillon || '-'}
+                    </span>
+                </td>
+                <td><strong>${cita.nombre}</strong></td>
+                <td><small>${cita.email}</small></td>
+                <td>
+                    <button type="button" class="btn btn-sm btn-estado ${claseEstado}" data-id="${cita.id}" onclick="cambiarEstadoCita(${cita.id}, '${cita.estado}')" title="Cambiar estado">
+                        <i class="bi ${iconoEstado}"></i> ${textoEstado}
+                    </button>
+                </td>
+                <td>
+                    <button type="button" class="btn btn-sm btn-eliminar" data-id="${cita.id}" title="Eliminar cita">
+                        <i class="bi bi-trash"></i> Eliminar
+                    </button>
+                </td>
+            </tr>
+            `;
+        });
+
+        // Añadir fila separadora entre grupos de fechas (excepto después del último grupo)
+        if (grupoIndex < Object.keys(citasPorFecha).length - 1) {
+            htmlCompleto += `
+                <tr class="fecha-separador">
+                    <td colspan="7" style="height: 15px; background-color: #e9ecef; border: none;"></td>
+                </tr>
+            `;
+        }
+    });
+
+    cuerpoTabla.innerHTML = htmlCompleto;
+
     // Agregar event listeners a los botones de eliminar
     document.querySelectorAll('.btn-eliminar').forEach(boton => {
-        boton.addEventListener('click', function() {
+        boton.addEventListener('click', function () {
             const id = parseInt(this.getAttribute('data-id'));
             mostrarModalEliminarCita(id);
         });
@@ -211,7 +283,7 @@ function actualizarEstadisticas(citas) {
     const rojo = citas.filter(c => c.sillon === 'Rojo').length;
     const azul = citas.filter(c => c.sillon === 'Azul').length;
     const amarillo = citas.filter(c => c.sillon === 'Amarillo').length;
-    
+
     document.getElementById('totalCitas').textContent = total;
     document.getElementById('citasRojo').textContent = rojo;
     document.getElementById('citasAzul').textContent = azul;
@@ -260,22 +332,22 @@ function mostrarModalEliminarCita(id) {
     const fecha = fila.querySelector('td:nth-child(1)').textContent.trim();
     const hora = fila.querySelector('td:nth-child(2)').textContent.trim();
     const nombre = fila.querySelector('td:nth-child(4)').textContent.trim();
-    
+
     const mensaje = `¿Estás seguro de que deseas eliminar la cita de ${nombre} el ${fecha} a las ${hora}?`;
-    
+
     // Actualizar mensaje del modal
     document.getElementById('mensajeEliminarCita').textContent = mensaje;
-    
+
     // Remover event listeners anteriores
     const btnConfirmar = document.getElementById('btnConfirmarEliminar');
     const newBtnConfirmar = btnConfirmar.cloneNode(true);
     btnConfirmar.parentNode.replaceChild(newBtnConfirmar, btnConfirmar);
-    
+
     // Agregar nuevo event listener
-    document.getElementById('btnConfirmarEliminar').addEventListener('click', function() {
+    document.getElementById('btnConfirmarEliminar').addEventListener('click', function () {
         eliminarCita(id);
     });
-    
+
     // Mostrar modal
     const modal = new bootstrap.Modal(document.getElementById('modalEliminarCita'));
     modal.show();
@@ -286,35 +358,23 @@ function mostrarModalEliminarCita(id) {
 // ============================================
 
 /**
- * Descarga las citas en formato PDF
+ * Descarga las citas en formato PDF usando jsPDF
  */
 async function descargarPDF() {
     try {
         const respuesta = await fetch(`${ADMIN_CONFIG.apiUrl}?action=obtener_citas`);
         const datos = await respuesta.json();
-        
+
         if (!datos.success || !datos.citas || datos.citas.length === 0) {
             mostrarAlertaAdmin('warning', 'Sin datos', 'No hay citas para descargar.');
             return;
         }
-        
+
         const citas = datos.citas;
-        
-        // Crear contenido HTML para el PDF
-        const htmlContent = generarHTMLParaPDF(citas);
-        
-        // Configuración para html2pdf
-        const opciones = {
-            margin: 10,
-            filename: `citas_${new Date().toISOString().split('T')[0]}.pdf`,
-            image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 2 },
-            jsPDF: { orientation: 'landscape', unit: 'mm', format: 'a4' }
-        };
-        
-        // Generar PDF
-        html2pdf().set(opciones).from(htmlContent).save();
-        
+
+        // Generar PDF con jsPDF
+        generarPDFConJsPDF(citas);
+
         mostrarAlertaAdmin('success', 'Descarga completada', 'El archivo PDF se ha descargado correctamente.');
     } catch (error) {
         console.error('Error en descargarPDF:', error);
@@ -323,12 +383,125 @@ async function descargarPDF() {
 }
 
 /**
- * Genera el HTML para el PDF
+ * Genera PDF usando jsPDF y autoTable
  */
-function generarHTMLParaPDF(citas) {
+function generarPDFConJsPDF(citas, fechaEspecifica = null) {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF('landscape', 'mm', 'a4');
+
+    // Título
+    const titulo = fechaEspecifica
+        ? `REPORTE DE CITAS - ${fechaEspecifica}`
+        : 'REPORTE DE CITAS';
+
+    doc.setFontSize(18);
+    doc.setTextColor(42, 111, 182); // Color azul principal
+    doc.text(titulo, 14, 15);
+
+    // Información del reporte
+    doc.setFontSize(10);
+    doc.setTextColor(100);
     const fecha = new Date().toLocaleDateString('es-ES');
     const hora = new Date().toLocaleTimeString('es-ES');
-    
+    doc.text(`Generado: ${fecha} - ${hora}`, 14, 22);
+    doc.text(`Total: ${citas.length} cita${citas.length !== 1 ? 's' : ''}`, 250, 22);
+
+    // Preparar datos para la tabla
+    const tableData = citas.map(cita => {
+        // Convertir fecha de YYYY-MM-DD a DD/MM/YYYY
+        let fechaFormateada = cita.fecha;
+        if (cita.fecha.includes('-')) {
+            const [año, mes, dia] = cita.fecha.split('-');
+            fechaFormateada = `${dia}/${mes}/${año}`;
+        }
+
+        return [
+            fechaFormateada,
+            cita.hora,
+            cita.sillon || '-',
+            cita.nombre,
+            cita.email,
+            cita.estado === 'presente' ? 'Presente' : 'Pendiente'
+        ];
+    });
+
+    // Generar tabla con autoTable
+    doc.autoTable({
+        head: [['Fecha', 'Hora', 'Sillón', 'Paciente', 'Email', 'Estado']],
+        body: tableData,
+        startY: 28,
+        theme: 'striped',
+        headStyles: {
+            fillColor: [42, 111, 182],
+            textColor: 255,
+            fontSize: 11,
+            fontStyle: 'bold',
+            halign: 'center'
+        },
+        bodyStyles: {
+            fontSize: 10,
+            cellPadding: 3
+        },
+        columnStyles: {
+            0: { halign: 'center', cellWidth: 28 },  // Fecha
+            1: { halign: 'center', cellWidth: 22 },  // Hora
+            2: { halign: 'center', cellWidth: 25 },  // Sillón
+            3: { halign: 'left', cellWidth: 50 },    // Paciente
+            4: { halign: 'left', cellWidth: 70 },    // Email
+            5: { halign: 'center', cellWidth: 28 }   // Estado
+        },
+        didParseCell: function (data) {
+            // Colorear estado
+            if (data.column.index === 5 && data.section === 'body') {
+                const estado = data.cell.raw;
+                if (estado === 'Presente') {
+                    data.cell.styles.textColor = [40, 167, 69]; // Verde
+                    data.cell.styles.fontStyle = 'bold';
+                } else {
+                    data.cell.styles.textColor = [255, 193, 7]; // Amarillo oscuro
+                }
+            }
+        },
+        margin: { top: 28, left: 14, right: 14 }
+    });
+
+    // Footer
+    const pageCount = doc.internal.getNumberOfPages();
+    for (let i = 1; i <= pageCount; i++) {
+        doc.setPage(i);
+        doc.setFontSize(8);
+        doc.setTextColor(150);
+        doc.text(
+            `Página ${i} de ${pageCount} - Clínica de Higiene Bucodental`,
+            doc.internal.pageSize.getWidth() / 2,
+            doc.internal.pageSize.getHeight() - 10,
+            { align: 'center' }
+        );
+    }
+
+    // Guardar PDF
+    const filename = fechaEspecifica
+        ? `citas_${fechaEspecifica}.pdf`
+        : `citas_${new Date().toISOString().split('T')[0]}.pdf`;
+    doc.save(filename);
+}
+
+/**
+ * Genera el HTML para el PDF
+ */
+function generarHTMLParaPDF(citas, fechaEspecifica = null) {
+    const fecha = new Date().toLocaleDateString('es-ES');
+    const hora = new Date().toLocaleTimeString('es-ES');
+
+    // Título del reporte
+    let tituloReporte = 'REPORTE DE CITAS';
+    if (fechaEspecifica) {
+        const fechaObj = new Date(fechaEspecifica + 'T00:00:00');
+        const fechaFormato = fechaObj.toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+        const fechaCapitalizada = fechaFormato.charAt(0).toUpperCase() + fechaFormato.slice(1);
+        tituloReporte = `REPORTE DE CITAS - ${fechaCapitalizada}`;
+    }
+
     let filasTabla = citas
         .sort((a, b) => {
             const dateA = new Date(a.fecha);
@@ -339,10 +512,10 @@ function generarHTMLParaPDF(citas) {
         .map((cita, index) => {
             // Convertir fecha YYYY-MM-DD a formato legible
             const fechaObj = new Date(cita.fecha + 'T00:00:00');
-            const fechaFormato = fechaObj.toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-            
+            const fechaFormato = fechaObj.toLocaleDateString('es-ES'); // Formato corto DD/MM/YYYY
+
             const rowColor = index % 2 === 0 ? '#f8f9fa' : '#ffffff';
-            
+
             return `
             <tr style="background-color: ${rowColor};">
                 <td style="border-bottom: 1px solid #e0e0e0; padding: 12px; text-align: center; font-weight: 500;">${index + 1}</td>
@@ -365,44 +538,43 @@ function generarHTMLParaPDF(citas) {
             </tr>
         `;
         }).join('');
-    
+
     return `
-        <div style="font-family: 'Segoe UI', Arial, sans-serif; color: #2c3e50; line-height: 1.6;">
+        <div style="font-family: Arial, sans-serif; color: #2c3e50; line-height: 1.4; font-size: 11px;">
             <!-- Encabezado -->
-            <div style="background: linear-gradient(135deg, #2A6FB6 0%, #1e52a8 100%); color: white; padding: 30px; border-radius: 8px; margin-bottom: 30px;">
+            <div style="background: linear-gradient(135deg, #2A6FB6 0%, #1e52a8 100%); color: white; padding: 15px; border-radius: 5px; margin-bottom: 15px;">
                 <div style="text-align: center;">
-                    <h1 style="margin: 0; font-size: 28px; font-weight: 300; letter-spacing: 0.5px;">REPORTE DE CITAS</h1>
-                    <p style="margin: 10px 0 0 0; font-size: 14px; opacity: 0.9;">Clínica de Higiene Bucodental</p>
+                    <h1 style="margin: 0; font-size: 18px; font-weight: 600;">${tituloReporte}</h1>
+                    <p style="margin: 5px 0 0 0; font-size: 11px;">Clínica de Higiene Bucodental</p>
                 </div>
             </div>
             
             <!-- Información del reporte -->
-            <div style="display: flex; justify-content: space-between; margin-bottom: 25px; padding: 0 5px;">
-                <div>
-                    <p style="margin: 5px 0; font-size: 13px;">
-                        <strong>Fecha de generación:</strong> ${fecha}
-                    </p>
-                    <p style="margin: 5px 0; font-size: 13px;">
-                        <strong>Hora:</strong> ${hora}
+            <div style="margin-bottom: 10px; overflow: hidden;">
+                <div style="float: left;">
+                    <p style="margin: 2px 0; font-size: 10px;">
+                        <strong>Generado:</strong> ${fecha} - ${hora}
                     </p>
                 </div>
-                <div style="text-align: right;">
-                    <p style="margin: 5px 0; font-size: 13px;">
-                        <strong>Total de citas:</strong> ${citas.length}
+                <div style="float: right;">
+                    <p style="margin: 2px 0; font-size: 10px;">
+                        <strong>Total:</strong> ${citas.length} cita${citas.length !== 1 ? 's' : ''}
                     </p>
                 </div>
+                <div style="clear: both;"></div>
             </div>
             
             <!-- Tabla de citas -->
-            <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+            <table style="width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 10px;">
                 <thead>
-                    <tr style="background-color: #2A6FB6; color: white; border: none;">
-                        <th style="padding: 12px; text-align: center; font-weight: 600; border: none; width: 5%;">N°</th>
-                        <th style="padding: 12px; text-align: center; font-weight: 600; border: none; width: 25%;">Fecha</th>
-                        <th style="padding: 12px; text-align: center; font-weight: 600; border: none; width: 12%;">Hora</th>
-                        <th style="padding: 12px; text-align: center; font-weight: 600; border: none; width: 15%;">Sillón</th>
-                        <th style="padding: 12px; text-align: left; font-weight: 600; border: none; width: 20%;">Paciente</th>
-                        <th style="padding: 12px; text-align: left; font-weight: 600; border: none; width: 23%;">Email</th>
+                    <tr style="background-color: #2A6FB6; color: white;">
+                        <th style="padding: 6px 4px; text-align: center; font-weight: 600; border: 1px solid #1e52a8; width: 4%;">N°</th>
+                        <th style="padding: 6px 4px; text-align: center; font-weight: 600; border: 1px solid #1e52a8; width: 14%;">Fecha</th>
+                        <th style="padding: 6px 4px; text-align: center; font-weight: 600; border: 1px solid #1e52a8; width: 8%;">Hora</th>
+                        <th style="padding: 6px 4px; text-align: center; font-weight: 600; border: 1px solid #1e52a8; width: 10%;">Sillón</th>
+                        <th style="padding: 6px 4px; text-align: left; font-weight: 600; border: 1px solid #1e52a8; width: 22%;">Paciente</th>
+                        <th style="padding: 6px 4px; text-align: left; font-weight: 600; border: 1px solid #1e52a8; width: 28%;">Email</th>
+                        <th style="padding: 6px 4px; text-align: center; font-weight: 600; border: 1px solid #1e52a8; width: 14%;">Estado</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -411,12 +583,9 @@ function generarHTMLParaPDF(citas) {
             </table>
             
             <!-- Pie de página -->
-            <div style="margin-top: 40px; padding-top: 20px; border-top: 2px solid #e0e0e0;">
-                <p style="font-size: 11px; color: #7f8c8d; margin: 5px 0;">
-                    Este documento ha sido generado automáticamente desde el Sistema de Gestión de Citas.
-                </p>
-                <p style="font-size: 11px; color: #7f8c8d; margin: 5px 0;">
-                    Para mayor información, contacte con el administrador del sistema.
+            <div style="margin-top: 15px; padding-top: 10px; border-top: 1px solid #e0e0e0;">
+                <p style="font-size: 9px; color: #7f8c8d; margin: 2px 0;">
+                    Documento generado automáticamente - Sistema de Gestión de Citas
                 </p>
             </div>
         </div>
@@ -443,56 +612,56 @@ function configurarEventos() {
     // Formulario de login
     const formularioLogin = document.getElementById('formularioLogin');
     if (formularioLogin) {
-        formularioLogin.addEventListener('submit', function(e) {
+        formularioLogin.addEventListener('submit', function (e) {
             e.preventDefault();
-            
+
             const usuario = document.getElementById('usuarioLogin').value.trim();
             const contrasena = document.getElementById('contrasenaLogin').value;
-            
+
             if (iniciarSesion(usuario, contrasena)) {
                 limpiarFormulario();
             }
         });
     }
-    
+
     // Botón logout
     const botonLogout = document.getElementById('botonLogout');
     if (botonLogout) {
-        botonLogout.addEventListener('click', function() {
+        botonLogout.addEventListener('click', function () {
             const modal = new bootstrap.Modal(document.getElementById('modalCerrarSesion'));
             modal.show();
         });
     }
-    
+
     // Botón de confirmación de cerrar sesión
     const btnConfirmarCerrarSesion = document.getElementById('btnConfirmarCerrarSesion');
     if (btnConfirmarCerrarSesion) {
-        btnConfirmarCerrarSesion.addEventListener('click', function() {
+        btnConfirmarCerrarSesion.addEventListener('click', function () {
             cerrarSesion();
             bootstrap.Modal.getInstance(document.getElementById('modalCerrarSesion')).hide();
         });
     }
-    
+
     // Botón descargar PDF
     const botonPDF = document.getElementById('botonDescargarPDF');
     if (botonPDF) {
         botonPDF.addEventListener('click', descargarPDF);
     }
-    
+
     // Permitir Enter en campo de usuario
     const usuarioInput = document.getElementById('usuarioLogin');
     if (usuarioInput) {
-        usuarioInput.addEventListener('keypress', function(e) {
+        usuarioInput.addEventListener('keypress', function (e) {
             if (e.key === 'Enter') {
                 document.getElementById('contrasenaLogin').focus();
             }
         });
     }
-    
+
     // Permitir Enter en campo de contraseña
     const contrasenaInput = document.getElementById('contrasenaLogin');
     if (contrasenaInput) {
-        contrasenaInput.addEventListener('keypress', function(e) {
+        contrasenaInput.addEventListener('keypress', function (e) {
             if (e.key === 'Enter') {
                 formularioLogin.dispatchEvent(new Event('submit'));
             }
@@ -509,16 +678,16 @@ function configurarEventos() {
  */
 function mostrarAlertaLogin(tipo, titulo, mensaje) {
     const alertaDiv = document.getElementById('alertaLogin');
-    
+
     const html = `
         <div class="alert alert-${tipo === 'error' ? 'danger' : tipo} alert-dismissible fade show" role="alert">
             <strong>${titulo}:</strong> ${mensaje}
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     `;
-    
+
     alertaDiv.innerHTML = html;
-    
+
     // Auto-cerrar después de 4 segundos
     setTimeout(() => {
         alertaDiv.innerHTML = '';
@@ -537,11 +706,11 @@ function mostrarAlertaAdmin(tipo, titulo, mensaje) {
         <strong>${titulo}:</strong> ${mensaje}
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     `;
-    
+
     // Insertar en el DOM
     const mainElement = document.querySelector('main');
     mainElement.insertBefore(alertDiv, mainElement.firstChild);
-    
+
     // Auto-cerrar después de 4 segundos
     setTimeout(() => {
         alertDiv.remove();
@@ -564,3 +733,107 @@ window.iniciarSesion = iniciarSesion;
 window.cerrarSesion = cerrarSesion;
 window.descargarPDF = descargarPDF;
 window.eliminarCita = eliminarCita;
+
+// ============================================
+// NUEVAS FUNCIONALIDADES AVANZADAS
+// ============================================
+
+/**
+ * Toggle (expandir/colapsar) un grupo de fechas
+ */
+function toggleGrupoFecha(fecha) {
+    const filasCitas = document.querySelectorAll(`.cita-row[data-fecha="${fecha}"]`);
+    const arrow = document.getElementById(`arrow-${fecha}`);
+
+    filasCitas.forEach(fila => {
+        if (fila.style.display === 'none') {
+            fila.style.display = '';
+            arrow.classList.remove('collapsed');
+            arrow.classList.replace('bi-chevron-right', 'bi-chevron-down');
+        } else {
+            fila.style.display = 'none';
+            arrow.classList.add('collapsed');
+            arrow.classList.replace('bi-chevron-down', 'bi-chevron-right');
+        }
+    });
+}
+
+/**
+ * Cambia el estado de una cita entre pendiente y presente
+ */
+async function cambiarEstadoCita(id, estadoActual) {
+    const nuevoEstado = estadoActual === 'pendiente' ? 'presente' : 'pendiente';
+
+    try {
+        const respuesta = await fetch(`${ADMIN_CONFIG.apiUrl}?action=actualizar_estado&id=${id}&estado=${nuevoEstado}`, {
+            method: 'PUT'
+        });
+
+        const datos = await respuesta.json();
+
+        if (datos.success) {
+            // Actualizar UI sin recargar toda la tabla
+            const fila = document.querySelector(`.cita-row[data-id="${id}"]`);
+            const boton = fila.querySelector('.btn-estado');
+
+            if (nuevoEstado === 'presente') {
+                fila.classList.add('presente');
+                boton.classList.remove('pendiente');
+                boton.classList.add('presente');
+                boton.innerHTML = '<i class="bi bi-check-circle-fill"></i> Presente';
+            } else {
+                fila.classList.remove('presente');
+                boton.classList.remove('presente');
+                boton.classList.add('pendiente');
+                boton.innerHTML = '<i class="bi bi-clock"></i> Pendiente';
+            }
+
+            // Actualizar el atributo onclick del botón
+            boton.setAttribute('onclick', `cambiarEstadoCita(${id}, '${nuevoEstado}')`);
+
+            // Recargar citas para actualizar estadísticas
+            await cargarCitas();
+        } else {
+            mostrarAlertaAdmin('error', 'Error', datos.message || 'No se pudo cambiar el estado.');
+        }
+    } catch (error) {
+        console.error('Error en cambiarEstadoCita:', error);
+        mostrarAlertaAdmin('error', 'Error', 'Error de conexión con el servidor.');
+    }
+}
+
+/**
+ * Descarga el PDF de las citas de un día específico
+ */
+async function descargarPDFPorDia(fecha) {
+    try {
+        const respuesta = await fetch(`${ADMIN_CONFIG.apiUrl}?action=obtener_citas`);
+        const datos = await respuesta.json();
+
+        if (!datos.success || !datos.citas || datos.citas.length === 0) {
+            mostrarAlertaAdmin('warning', 'Sin datos', 'No hay citas para descargar.');
+            return;
+        }
+
+        // Filtrar citas del día específico
+        const citasDelDia = datos.citas.filter(c => c.fecha === fecha);
+
+        if (citasDelDia.length === 0) {
+            mostrarAlertaAdmin('warning', 'Sin datos', 'No hay citas para este día.');
+            return;
+        }
+
+        // Generar PDF con jsPDF
+        generarPDFConJsPDF(citasDelDia, fecha);
+
+        mostrarAlertaAdmin('success', 'Descarga completada', `PDF del ${fecha} descargado correctamente.`);
+    } catch (error) {
+        console.error('Error en descargarPDFPorDia:', error);
+        mostrarAlertaAdmin('error', 'Error', 'Error al descargar el PDF.');
+    }
+}
+
+// Exportar nuevas funciones globales
+window.toggleGrupoFecha = toggleGrupoFecha;
+window.cambiarEstadoCita = cambiarEstadoCita;
+window.descargarPDFPorDia = descargarPDFPorDia;

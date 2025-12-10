@@ -28,106 +28,114 @@ $respuesta = ['success' => false, 'message' => 'Acción no válida'];
 // Envolver todo en try-catch para evitar errores HTML
 try {
 
-// ============================================
+    // ============================================
 // RUTAS API
 // ============================================
 
-switch ($ruta) {
-    // ========== AUTENTICACIÓN ==========
-    case 'login':
-        if ($metodo === 'POST') {
-            $datos = json_decode(file_get_contents("php://input"), true);
-            login($conexion, $datos);
-        }
-        break;
+    switch ($ruta) {
+        // ========== AUTENTICACIÓN ==========
+        case 'login':
+            if ($metodo === 'POST') {
+                $datos = json_decode(file_get_contents("php://input"), true);
+                login($conexion, $datos);
+            }
+            break;
 
-    case 'logout':
-        logout();
-        break;
+        case 'logout':
+            logout();
+            break;
 
-    // ========== CITAS ==========
-    case 'crear_cita':
-        if ($metodo === 'POST') {
-            $datos = json_decode(file_get_contents("php://input"), true);
-            crearCita($conexion, $datos);
-        }
-        break;
+        // ========== CITAS ==========
+        case 'crear_cita':
+            if ($metodo === 'POST') {
+                $datos = json_decode(file_get_contents("php://input"), true);
+                crearCita($conexion, $datos);
+            }
+            break;
 
-    case 'obtener_citas':
-        if ($metodo === 'GET') {
-            obtenerCitas($conexion);
-        }
-        break;
+        case 'obtener_citas':
+            if ($metodo === 'GET') {
+                obtenerCitas($conexion);
+            }
+            break;
 
-    case 'obtener_cita':
-        if ($metodo === 'GET') {
-            $id = isset($_GET['id']) ? intval($_GET['id']) : 0;
-            obtenerCitaPorId($conexion, $id);
-        }
-        break;
+        case 'obtener_cita':
+            if ($metodo === 'GET') {
+                $id = isset($_GET['id']) ? intval($_GET['id']) : 0;
+                obtenerCitaPorId($conexion, $id);
+            }
+            break;
 
-    case 'actualizar_cita':
-        if ($metodo === 'PUT') {
-            $datos = json_decode(file_get_contents("php://input"), true);
-            actualizarCita($conexion, $datos);
-        }
-        break;
+        case 'actualizar_cita':
+            if ($metodo === 'PUT') {
+                $datos = json_decode(file_get_contents("php://input"), true);
+                actualizarCita($conexion, $datos);
+            }
+            break;
 
-    case 'eliminar_cita':
-        if ($metodo === 'DELETE') {
-            $id = isset($_GET['id']) ? intval($_GET['id']) : 0;
-            eliminarCita($conexion, $id);
-        }
-        break;
+        case 'eliminar_cita':
+            if ($metodo === 'DELETE') {
+                $id = isset($_GET['id']) ? intval($_GET['id']) : 0;
+                eliminarCita($conexion, $id);
+            }
+            break;
 
-    case 'obtener_citas_fecha':
-        if ($metodo === 'GET') {
-            $fecha = isset($_GET['fecha']) ? $_GET['fecha'] : '';
-            obtenerCitasPorFecha($conexion, $fecha);
-        }
-        break;
+        case 'actualizar_estado':
+            if ($metodo === 'PUT') {
+                $id = isset($_GET['id']) ? intval($_GET['id']) : 0;
+                $estado = isset($_GET['estado']) ? trim($_GET['estado']) : '';
+                actualizarEstadoCita($conexion, $id, $estado);
+            }
+            break;
 
-    // ========== SERVICIOS ==========
-    case 'obtener_servicios':
-        if ($metodo === 'GET') {
-            obtenerServicios($conexion);
-        }
-        break;
+        case 'obtener_citas_fecha':
+            if ($metodo === 'GET') {
+                $fecha = isset($_GET['fecha']) ? $_GET['fecha'] : '';
+                obtenerCitasPorFecha($conexion, $fecha);
+            }
+            break;
 
-    case 'crear_servicio':
-        if ($metodo === 'POST') {
-            $datos = json_decode(file_get_contents("php://input"), true);
-            crearServicio($conexion, $datos);
-        }
-        break;
+        // ========== SERVICIOS ==========
+        case 'obtener_servicios':
+            if ($metodo === 'GET') {
+                obtenerServicios($conexion);
+            }
+            break;
 
-    // ========== ADMINISTRADORES ==========
-    case 'obtener_admins':
-        if ($metodo === 'GET') {
-            obtenerAdministradores($conexion);
-        }
-        break;
+        case 'crear_servicio':
+            if ($metodo === 'POST') {
+                $datos = json_decode(file_get_contents("php://input"), true);
+                crearServicio($conexion, $datos);
+            }
+            break;
 
-    case 'crear_admin':
-        if ($metodo === 'POST') {
-            $datos = json_decode(file_get_contents("php://input"), true);
-            crearAdministrador($conexion, $datos);
-        }
-        break;
+        // ========== ADMINISTRADORES ==========
+        case 'obtener_admins':
+            if ($metodo === 'GET') {
+                obtenerAdministradores($conexion);
+            }
+            break;
 
-    case 'cambiar_password':
-        if ($metodo === 'POST') {
-            $datos = json_decode(file_get_contents("php://input"), true);
-            cambiarPassword($conexion, $datos);
-        }
-        break;
+        case 'crear_admin':
+            if ($metodo === 'POST') {
+                $datos = json_decode(file_get_contents("php://input"), true);
+                crearAdministrador($conexion, $datos);
+            }
+            break;
 
-    default:
-        http_response_code(404);
-        $respuesta = ['success' => false, 'message' => 'Endpoint no encontrado'];
-}
+        case 'cambiar_password':
+            if ($metodo === 'POST') {
+                $datos = json_decode(file_get_contents("php://input"), true);
+                cambiarPassword($conexion, $datos);
+            }
+            break;
 
-// Cerrar try-catch
+        default:
+            http_response_code(404);
+            $respuesta = ['success' => false, 'message' => 'Endpoint no encontrado'];
+    }
+
+    // Cerrar try-catch
 } catch (Exception $e) {
     $respuesta = ['success' => false, 'message' => 'Error interno: ' . $e->getMessage()];
 }
@@ -143,7 +151,8 @@ exit;
 // FUNCIONES DE AUTENTICACIÓN
 // ============================================
 
-function login($conexion, $datos) {
+function login($conexion, $datos)
+{
     global $respuesta;
 
     $usuario = isset($datos['usuario']) ? trim($datos['usuario']) : '';
@@ -162,7 +171,7 @@ function login($conexion, $datos) {
 
     if ($resultado->num_rows > 0) {
         $fila = $resultado->fetch_assoc();
-        
+
         // Verificar contraseña
         if (password_verify($password, $fila['contraseña'])) {
             // Crear sesión
@@ -188,7 +197,8 @@ function login($conexion, $datos) {
     $stmt->close();
 }
 
-function logout() {
+function logout()
+{
     global $respuesta;
     session_start();
     session_destroy();
@@ -199,7 +209,8 @@ function logout() {
 // FUNCIONES DE CITAS
 // ============================================
 
-function crearCita($conexion, $datos) {
+function crearCita($conexion, $datos)
+{
     global $respuesta;
 
     $fecha = isset($datos['fecha']) ? $datos['fecha'] : '';
@@ -230,7 +241,7 @@ function crearCita($conexion, $datos) {
     $stmt = $conexion->prepare("SELECT id FROM citas WHERE email = ? AND fecha = ? AND estado != 'cancelada'");
     $stmt->bind_param("ss", $email, $fecha);
     $stmt->execute();
-    
+
     if ($stmt->get_result()->num_rows > 0) {
         $respuesta = ['success' => false, 'message' => 'Ya tienes una cita registrada para este día'];
         $stmt->close();
@@ -243,9 +254,9 @@ function crearCita($conexion, $datos) {
         $stmt = $conexion->prepare("SELECT id FROM citas WHERE fecha = ? AND hora = ? AND sillon = ? AND estado != 'cancelada'");
         $stmt->bind_param("sss", $fecha, $hora, $sillon);
         $stmt->execute();
-        
+
         if ($stmt->get_result()->num_rows > 0) {
-            $respuesta = ['success' => false, 'message' => 'El sillón '.$sillon.' ya está reservado para esta hora'];
+            $respuesta = ['success' => false, 'message' => 'El sillón ' . $sillon . ' ya está reservado para esta hora'];
             $stmt->close();
             return;
         }
@@ -270,7 +281,8 @@ function crearCita($conexion, $datos) {
     $stmt->close();
 }
 
-function obtenerCitas($conexion) {
+function obtenerCitas($conexion)
+{
     global $respuesta;
 
     $resultado = $conexion->query("SELECT * FROM citas WHERE estado != 'cancelada' ORDER BY fecha DESC, hora DESC");
@@ -290,7 +302,8 @@ function obtenerCitas($conexion) {
     }
 }
 
-function obtenerCitaPorId($conexion, $id) {
+function obtenerCitaPorId($conexion, $id)
+{
     global $respuesta;
 
     $stmt = $conexion->prepare("SELECT * FROM citas WHERE id = ?");
@@ -307,7 +320,8 @@ function obtenerCitaPorId($conexion, $id) {
     $stmt->close();
 }
 
-function obtenerCitasPorFecha($conexion, $fecha) {
+function obtenerCitasPorFecha($conexion, $fecha)
+{
     global $respuesta;
 
     $stmt = $conexion->prepare("SELECT * FROM citas WHERE fecha = ? ORDER BY hora");
@@ -324,7 +338,8 @@ function obtenerCitasPorFecha($conexion, $fecha) {
     $stmt->close();
 }
 
-function actualizarCita($conexion, $datos) {
+function actualizarCita($conexion, $datos)
+{
     global $respuesta;
 
     $id = isset($datos['id']) ? intval($datos['id']) : 0;
@@ -349,7 +364,8 @@ function actualizarCita($conexion, $datos) {
     $stmt->close();
 }
 
-function eliminarCita($conexion, $id) {
+function eliminarCita($conexion, $id)
+{
     global $respuesta;
 
     if ($id <= 0) {
@@ -369,11 +385,50 @@ function eliminarCita($conexion, $id) {
     $stmt->close();
 }
 
+function actualizarEstadoCita($conexion, $id, $estado)
+{
+    global $respuesta;
+
+    if ($id <= 0) {
+        $respuesta = ['success' => false, 'message' => 'ID inválido'];
+        return;
+    }
+
+    // Validar que el estado sea uno de los valores permitidos
+    $estados_validos = ['pendiente', 'confirmada', 'completado', 'completada', 'presente', 'cancelada'];
+    if (!in_array($estado, $estados_validos)) {
+        $respuesta = ['success' => false, 'message' => 'Estado inválido'];
+        return;
+    }
+
+    $stmt = $conexion->prepare("UPDATE citas SET estado = ? WHERE id = ?");
+    $stmt->bind_param("si", $estado, $id);
+
+    if ($stmt->execute()) {
+        // Verificar si la cita existe (aunque no se haya modificado)
+        $stmt_check = $conexion->prepare("SELECT id FROM citas WHERE id = ?");
+        $stmt_check->bind_param("i", $id);
+        $stmt_check->execute();
+
+        if ($stmt_check->get_result()->num_rows > 0) {
+            $respuesta = ['success' => true, 'message' => 'Estado actualizado correctamente'];
+        } else {
+            $respuesta = ['success' => false, 'message' => 'Cita no encontrada'];
+        }
+        $stmt_check->close();
+    } else {
+        $respuesta = ['success' => false, 'message' => 'Error al actualizar estado'];
+    }
+
+    $stmt->close();
+}
+
 // ============================================
 // FUNCIONES DE SERVICIOS
 // ============================================
 
-function obtenerServicios($conexion) {
+function obtenerServicios($conexion)
+{
     global $respuesta;
 
     $resultado = $conexion->query("SELECT * FROM servicios ORDER BY fecha_creacion DESC");
@@ -389,7 +444,8 @@ function obtenerServicios($conexion) {
     }
 }
 
-function crearServicio($conexion, $datos) {
+function crearServicio($conexion, $datos)
+{
     global $respuesta;
 
     $titulo = isset($datos['titulo']) ? trim($datos['titulo']) : '';
@@ -417,7 +473,8 @@ function crearServicio($conexion, $datos) {
 // FUNCIONES DE ADMINISTRADORES
 // ============================================
 
-function obtenerAdministradores($conexion) {
+function obtenerAdministradores($conexion)
+{
     global $respuesta;
 
     $resultado = $conexion->query("SELECT id, usuario, nombre, email, activo, fecha_creacion FROM administradores");
@@ -433,7 +490,8 @@ function obtenerAdministradores($conexion) {
     }
 }
 
-function crearAdministrador($conexion, $datos) {
+function crearAdministrador($conexion, $datos)
+{
     global $respuesta;
 
     $usuario = isset($datos['usuario']) ? trim($datos['usuario']) : '';
@@ -455,7 +513,7 @@ function crearAdministrador($conexion, $datos) {
     $stmt = $conexion->prepare("SELECT id FROM administradores WHERE usuario = ?");
     $stmt->bind_param("s", $usuario);
     $stmt->execute();
-    
+
     if ($stmt->get_result()->num_rows > 0) {
         $respuesta = ['success' => false, 'message' => 'El usuario ya existe'];
         $stmt->close();
@@ -478,7 +536,8 @@ function crearAdministrador($conexion, $datos) {
     $stmt->close();
 }
 
-function cambiarPassword($conexion, $datos) {
+function cambiarPassword($conexion, $datos)
+{
     global $respuesta;
 
     $usuario = isset($datos['usuario']) ? trim($datos['usuario']) : '';
