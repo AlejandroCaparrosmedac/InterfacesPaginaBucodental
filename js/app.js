@@ -34,11 +34,13 @@ document.addEventListener('DOMContentLoaded', async function () {
 });
 
 // ============================================
-// FLATPICKR - CALENDARIO INTERACTIVO
+// FLATPICKR - CALENDARIO INTERACTIVO INLINE
 // ============================================
 
 function inicializarFlatpickr() {
-    flatpickr('#fechaCita', {
+    // Calendario inline en la columna izquierda
+    flatpickr('#calendarioInline', {
+        inline: true,  // Mostrar calendario siempre visible
         mode: 'single',
         dateFormat: 'd/m/Y',
         minDate: 'today',
@@ -49,8 +51,26 @@ function inicializarFlatpickr() {
                 return date.getDay() !== 5;
             }
         ],
-        onChange: function (selectedDates, dateStr, instance) {
+        onChange: async function (selectedDates, dateStr, instance) {
             console.log('Fecha seleccionada:', dateStr);
+
+            // Actualizar el campo de fecha en el formulario
+            document.getElementById('fechaCita').value = dateStr;
+
+            // Habilitar select de hora
+            document.getElementById('horaCita').disabled = false;
+
+            // Resetear hora seleccionada
+            document.getElementById('horaCita').value = '';
+
+            // Cargar citas y actualizar disponibilidad
+            await cargarCitasDelServidor();
+            actualizarDisponibilidadHoras();
+
+            // Limpiar selección de sillones
+            setTimeout(() => {
+                limpiarSeleccionSillon();
+            }, 100);
         }
     });
 }
@@ -121,25 +141,26 @@ function configurarEventos() {
         seleccionarSillon('Amarillo', 'sillonAmarillo');
     });
 
-    // Modal: limpiar al abrir
-    const modalPedirCita = document.getElementById('modalPedirCita');
-    if (modalPedirCita) {
-        modalPedirCita.addEventListener('show.bs.modal', async function () {
-            // Cargar citas frescas del servidor (forzar, sin usar caché)
-            await cargarCitasDelServidor(true);
-            setTimeout(() => {
-                actualizarDisponibilidadHoras();
-                // También actualizar sillones si hay hora seleccionada
-                if (document.getElementById('horaCita').value) {
-                    actualizarDisponibilidadSillones();
-                }
-            }, 200);
-        });
-
-        // Modal: limpiar al cerrar (por cualquier método: X, cancelar, o confirmar)
-        modalPedirCita.addEventListener('hidden.bs.modal', function () {
-            limpiarFormulario();
-            limpiarSeleccionSillon();
+    // Evento cuando se cierra el modal de confirmación
+    const modalConfirmacion = document.getElementById('modalConfirmacionCita');
+    if (modalConfirmacion) {
+        modalConfirmacion.addEventListener('hidden.bs.modal', async function () {
+            // Recargar citas del servidor para asegurar que los cambios se reflejen
+            await cargarCitasDelServidor(true); // true para forzar recarga
+            
+            // Ocultar los detalles de disponibilidad
+            const avisoDiv = document.getElementById('avisoDisponibilidad');
+            if (avisoDiv) {
+                avisoDiv.style.display = 'none';
+            }
+            
+            // Si hay fecha y hora seleccionadas, actualizar disponibilidad
+            const fecha = document.getElementById('fechaCita').value.trim();
+            const hora = document.getElementById('horaCita').value;
+            
+            if (fecha && hora) {
+                actualizarDisponibilidadSillones();
+            }
         });
     }
 }
@@ -227,15 +248,10 @@ function validarEmail() {
         return false;
     }
 
-    if (!email.endsWith(CONFIG.emailDomain)) {
-        errorDiv.textContent = `Solo se aceptan emails de ${CONFIG.emailDomain}`;
-        document.getElementById('emailCita').classList.add('is-invalid');
-        return false;
-    }
-
-    const regexEmail = /^[^\s@]+@alu\.medac\.es$/;
+    // Aceptar tanto @alu.medac.es como @medac.es
+    const regexEmail = /^[^\s@]+@(alu\.)?medac\.es$/;
     if (!regexEmail.test(email)) {
-        errorDiv.textContent = 'Formato de email inválido';
+        errorDiv.textContent = 'Solo se aceptan emails de @medac.es o @alu.medac.es';
         document.getElementById('emailCita').classList.add('is-invalid');
         return false;
     }
@@ -344,11 +360,7 @@ async function guardarCita() {
             // Actualizar caché de citas antes de mostrar confirmación
             await cargarCitasDelServidor();
 
-            // Cerrar modal de pedir cita
-            const modalPedirCita = bootstrap.Modal.getInstance(document.getElementById('modalPedirCita'));
-            if (modalPedirCita) {
-                modalPedirCita.hide();
-            }
+            // Ya no hay modal que cerrar, el formulario está siempre visible
 
             // Llenar datos del modal de confirmación
             const fechaObj = new Date(fechaFormato + 'T00:00:00');
@@ -527,8 +539,10 @@ async function buscarCita() {
         return;
     }
 
-    if (!email.endsWith(CONFIG.emailDomain)) {
-        resultadoDiv.innerHTML = `<div class="alert alert-danger">Solo se aceptan emails de ${CONFIG.emailDomain}</div>`;
+    // Validar que sea un email de @medac.es o @alu.medac.es
+    const regexEmail = /^[^\s@]+@(alu\.)?medac\.es$/;
+    if (!regexEmail.test(email)) {
+        resultadoDiv.innerHTML = '<div class="alert alert-danger">Solo se aceptan emails de @medac.es o @alu.medac.es</div>';
         return;
     }
 

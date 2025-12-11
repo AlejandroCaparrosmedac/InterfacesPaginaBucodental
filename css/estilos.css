@@ -298,6 +298,226 @@ header::after {
 }
 
 /* ============================================
+   LAYOUT DE DOS COLUMNAS - CALENDARIO Y FORMULARIO
+   ============================================ */
+
+/* Columna del calendario */
+.calendar-column {
+    background: linear-gradient(135deg, #e8f4ff 0%, #d5eaff 100%);
+    padding: 3rem 2rem;
+    min-height: 700px;
+    border-right: 3px solid var(--primary-blue);
+    display: flex;
+    align-items: flex-start;
+    /* Cambiar de center a flex-start para alinear arriba */
+    justify-content: center;
+    border-bottom-left-radius: 12px;
+    /* Redondear esquina inferior izquierda */
+}
+
+.calendar-container {
+    width: 100%;
+    max-width: 450px;
+    padding-top: 0;
+}
+
+/* Columna del formulario */
+.form-column {
+    background: white;
+    padding: 3rem 2rem;
+    min-height: 700px;
+    display: flex;
+    align-items: flex-start;
+    /* Cambiar de center a flex-start para alinear arriba */
+    justify-content: center;
+    border-bottom-right-radius: 12px;
+    /* Redondear esquina inferior derecha */
+}
+
+.form-container {
+    width: 100%;
+    max-width: 500px;
+}
+
+/* Títulos de columnas */
+.column-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--primary-blue);
+    margin-bottom: 1.5rem;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.column-title i {
+    margin-right: 0.5rem;
+}
+
+/* Calendario inline de Flatpickr */
+.flatpickr-calendar.inline {
+    width: 100% !important;
+    max-width: 100%;
+    margin: 0;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    border-radius: var(--radius-lg);
+    border: 2px solid var(--primary-blue);
+    font-size: 1.2rem;
+}
+
+.flatpickr-calendar.inline .flatpickr-months {
+    background: var(--primary-blue);
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    padding: 1.5rem 0;
+}
+
+.flatpickr-calendar.inline .flatpickr-current-month {
+    color: white;
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.flatpickr-calendar.inline .flatpickr-weekday {
+    color: var(--primary-blue);
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.flatpickr-calendar.inline .flatpickr-day {
+    height: 70px;
+    /* Aumentar de 60px a 70px */
+    line-height: 70px;
+    font-size: 1.4rem;
+    /* Aumentar fuente también */
+    max-width: none;
+    flex: 1;
+}
+
+.flatpickr-calendar.inline .flatpickr-days {
+    width: 100% !important;
+}
+
+.flatpickr-calendar.inline .dayContainer {
+    width: 100% !important;
+    min-width: 100% !important;
+    max-width: 100% !important;
+}
+
+.flatpickr-calendar.inline .flatpickr-day.selected {
+    background: var(--primary-blue) !important;
+    border-color: var(--primary-blue) !important;
+}
+
+.flatpickr-calendar.inline .flatpickr-day.selected:hover {
+    background: var(--primary-blue-dark) !important;
+}
+
+.flatpickr-calendar.inline .flatpickr-day:hover {
+    background: var(--primary-blue-light);
+    border-color: var(--primary-blue);
+}
+
+/* Formulario en columna derecha */
+.form-column .form-label {
+    font-weight: 600;
+    color: var(--primary-blue);
+    margin-bottom: 0.75rem;
+    font-size: 1rem;
+}
+
+.form-column .form-label i {
+    margin-right: 0.5rem;
+}
+
+.form-column .form-control,
+.form-column .form-select {
+    border: 2px solid var(--gray-300);
+    border-radius: var(--radius-md);
+    padding: 0.75rem 1rem;
+    transition: all 0.3s ease;
+}
+
+.form-column .form-control:focus,
+.form-column .form-select:focus {
+    border-color: var(--primary-blue);
+    box-shadow: 0 0 0 0.2rem rgba(42, 111, 182, 0.25);
+}
+
+.form-column .form-control[readonly] {
+    background-color: var(--gray-100);
+    cursor: not-allowed;
+}
+
+/* Botón confirmar cita */
+.btn-confirmar-cita {
+    width: 100%;
+    padding: 1rem 2rem;
+    font-size: 1.2rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-blue-dark) 100%);
+    border: none;
+    border-radius: var(--radius-md);
+    color: white;
+    margin-top: 1.5rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(42, 111, 182, 0.3);
+}
+
+.btn-confirmar-cita:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(42, 111, 182, 0.4);
+    background: linear-gradient(135deg, var(--primary-blue-dark) 0%, var(--primary-blue) 100%);
+}
+
+.btn-confirmar-cita:active {
+    transform: translateY(0);
+}
+
+.btn-confirmar-cita i {
+    margin-right: 0.5rem;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+
+    .calendar-column,
+    .form-column {
+        min-height: auto;
+        padding: 2rem 1.5rem;
+        border-right: none;
+    }
+
+    .calendar-column {
+        border-bottom: 3px solid var(--primary-blue);
+    }
+
+    .column-title {
+        font-size: 1.5rem;
+    }
+
+    .flatpickr-calendar.inline {
+        max-width: 100%;
+    }
+}
+
+@media (max-width: 576px) {
+
+    .calendar-column,
+    .form-column {
+        padding: 1.5rem 1rem;
+    }
+
+    .column-title {
+        font-size: 1.25rem;
+    }
+
+    .btn-confirmar-cita {
+        font-size: 1rem;
+        padding: 0.875rem 1.5rem;
+    }
+}
+
+/* ============================================
    SECCIONES Y CONTENIDO
    ============================================ */
 
@@ -1060,4 +1280,159 @@ a:focus-visible {
         margin-left: 0;
         margin-right: 0;
     }
+}
+
+/* ============================================
+   FLATPICKR - CALENDARIO INTERACTIVO
+   ============================================ */
+
+.flatpickr-calendar {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border: 1px solid #e9ecef;
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.flatpickr-innerContainer {
+    padding: 1rem 1.5rem;
+    width: 100%;
+}
+
+.flatpickr-months {
+    padding: 0 0 1rem 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.flatpickr-month {
+    height: auto;
+    padding: 0.5rem 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.flatpickr-prev-month,
+.flatpickr-next-month {
+    color: white;
+    background-color: #5DADE2;
+    background-image: linear-gradient(135deg, #5DADE2 0%, #3498DB 100%);
+    transition: all 0.3s ease;
+    flex-shrink: 0;
+    padding: 0.5rem 0.75rem;
+    font-size: 1.8rem;
+    cursor: pointer;
+    border-radius: 10px;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 60px;
+    height: 60px;
+    box-shadow: 0 6px 16px rgba(93, 173, 226, 0.4);
+    font-weight: bold;
+}
+
+.flatpickr-prev-month:hover,
+.flatpickr-next-month:hover {
+    color: white;
+    background-color: #3498DB;
+    background-image: linear-gradient(135deg, #3498DB 0%, #2E86C1 100%);
+    transform: scale(1.2);
+    box-shadow: 0 8px 24px rgba(93, 173, 226, 0.6);
+}
+
+.flatpickr-current-month {
+    color: #2c3e50;
+    font-weight: 600;
+    flex: 1;
+    text-align: center;
+    padding: 0 0.5rem;
+    white-space: nowrap;
+    min-width: 150px;
+}
+
+.flatpickr-weekdays {
+    background: transparent;
+    padding: 0.25rem 0 0.5rem 0;
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 0;
+    margin-bottom: 0.25rem;
+}
+
+.flatpickr-weekday {
+    color: #6c757d;
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-align: center;
+    padding: 0.5rem;
+    width: 100%;
+}
+
+.flatpickr-days {
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(45px, 1fr));
+    gap: 4px;
+}
+
+.flatpickr-day {
+    color: #2c3e50;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    margin: 0;
+    padding: 0.5rem;
+    text-align: center;
+    width: 100%;
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.flatpickr-day.prevMonthDay,
+.flatpickr-day.nextMonthDay {
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.flatpickr-day:hover:not(.disabled) {
+    background: #2A6FB6;
+    color: white;
+    border-color: #2A6FB6;
+}
+
+.flatpickr-day.selected {
+    background: #2A6FB6;
+    border-color: #2A6FB6;
+    color: white;
+    font-weight: 600;
+}
+
+.flatpickr-day.today {
+    border-color: #2A6FB6;
+    background: transparent;
+    font-weight: 600;
+}
+
+.flatpickr-day.disabled {
+    color: #e9ecef;
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+.flatpickr-day.inRange {
+    background: rgba(42, 111, 182, 0.1);
+    border-color: #2A6FB6;
+}
+
+#calendarioInline {
+    margin: 0 auto 1.5rem;
 }

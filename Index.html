@@ -58,30 +58,126 @@
             <p>Consejos para mantener una sonrisa saludable</p>
         </div>
     </header>
-    <main class="container my-5 text-center">
-        <div class="carousel-text-overlay">
-            <p id="textoCarrousel" class="lead">“Las mejores sonrisas comienzan con grandes profesionales en formación.”
-            </p>
-        </div>
-        <div id="carouselExample" class="carousel slide " data-bs-ride="carousel">
-            <div class="carousel-inner">
-                <div class="carousel-item active">
-                    <img src="img/imagen1.jpg" class="d-block " alt="..." id="img1">
-                </div>
-                <div class="carousel-item">
-                    <img src="img/imagen2.jpg" class="d-block " alt="..." id="img2">
+    <main class="container-fluid my-5 px-0" style="padding-top: 180px;">
+        <!-- Layout de Dos Columnas -->
+        <div class="row g-0">
+            <!-- COLUMNA IZQUIERDA: Calendario -->
+            <div class="col-md-6 calendar-column rounded-circle">
+                <div class="calendar-container">
+                    <h2 class="column-title">
+                        <i class="bi bi-calendar-week"></i> Selecciona tu día de cita
+                    </h2>
+                    <p class="text-center text-muted mb-4">
+                        <i class="bi bi-info-circle"></i> Solo puedes seleccionar viernes
+                    </p>
+                    <!-- Calendario Flatpickr Inline -->
+                    <div id="calendarioInline"></div>
                 </div>
             </div>
-            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
-                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">Previous</span>
-            </button>
-            <button class="carousel-control-next" type="button" data-bs-target="#carouselExample" data-bs-slide="next">
-                <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">Next</span>
-            </button>
-        </div><br><br>
-        <hr>
+
+            <!-- COLUMNA DERECHA: Formulario de Cita -->
+            <div class="col-md-6 form-column">
+                <div class="form-container">
+                    <h2 class="column-title">
+                        <i class="bi bi-clipboard-check"></i> Completa tu cita
+                    </h2>
+
+                    <form id="formularioCita" class="p-3">
+                        <!-- Campo oculto para fecha (se actualiza desde calendario) -->
+                        <input type="hidden" id="fechaCita" required>
+
+                        <!-- Hora -->
+                        <div class="mb-4">
+                            <label for="horaCita" class="form-label">
+                                <i class="bi bi-clock"></i> Hora de la cita
+                            </label>
+                            <select class="form-select form-select-lg" id="horaCita" required
+                                title="Elige el horario de tu preferencia">
+                                <option value="" selected disabled>Elige una hora</option>
+                                <option value="15:15">15:15</option>
+                                <option value="15:55">15:55</option>
+                                <option value="16:35">16:35</option>
+                                <option value="17:15">17:15</option>
+                                <option value="17:55">17:55</option>
+                                <option value="18:35">18:35</option>
+                                <option value="19:15">19:15</option>
+                                <option value="19:55">19:55</option>
+                                <option value="20:35">20:35</option>
+                            </select>
+                        </div>
+
+                        <!-- Sillón -->
+                        <div class="mb-4">
+                            <label class="form-label">
+                                <i class="bi bi-pin-map"></i> Selecciona un sillón
+                            </label>
+                            <div class="d-flex gap-3 justify-content-center">
+                                <button type="button" class="btn sillon-btn" id="sillonRojo"
+                                    style="background-color: #DC3545; color: white; width: 120px; font-weight: bold;">
+                                    <i class="bi bi-check-circle"></i> Rojo
+                                </button>
+                                <button type="button" class="btn sillon-btn" id="sillonAzul"
+                                    style="background-color: #0D6EFD; color: white; width: 120px; font-weight: bold;">
+                                    <i class="bi bi-check-circle"></i> Azul
+                                </button>
+                                <button type="button" class="btn sillon-btn" id="sillonAmarillo"
+                                    style="background-color: #FFC107; color: black; width: 120px; font-weight: bold;">
+                                    <i class="bi bi-check-circle"></i> Amarillo
+                                </button>
+                            </div>
+                            <input type="hidden" id="sillonCita" required>
+                        </div>
+
+                        <!-- Nombre completo -->
+                        <div class="mb-4">
+                            <label for="nombreCita" class="form-label">
+                                <i class="bi bi-person"></i> Nombre completo
+                            </label>
+                            <input type="text" class="form-control form-control-lg" id="nombreCita"
+                                placeholder="Escribe tu nombre completo" required title="Ingresa tu nombre y apellidos">
+                            <div class="invalid-feedback" id="errorNombre"></div>
+                        </div>
+
+                        <!-- Email -->
+                        <div class="mb-4">
+                            <label for="emailCita" class="form-label">
+                                <i class="bi bi-envelope"></i> Correo electrónico
+                            </label>
+                            <input type="email" class="form-control form-control-lg" id="emailCita"
+                                placeholder="tunombre@alu.medac.es" required title="Usa tu correo institucional">
+                            <small class="text-muted">
+                                <i class="bi bi-info-circle"></i> Solo se aceptan correos institucionales: @alu.medac.es o @medac.es
+                            </small>
+                            <div class="invalid-feedback" id="errorEmail"></div>
+                        </div>
+
+                        <!-- Información de disponibilidad -->
+                        <div id="avisoDisponibilidad" class="alert alert-info small" style="display: none;">
+                            <i class="bi bi-info-circle"></i>
+                            <strong>Información de disponibilidad:</strong>
+                            <div id="detalleDisponibilidad" style="margin-top: 0.5rem;"></div>
+                        </div>
+
+                        <!-- Botón Confirmar -->
+                        <button type="button" class="btn btn-confirmar-cita" id="botonConfirmarCita">
+                            <i class="bi bi-check-circle-fill"></i> Confirmar Cita
+                        </button>
+                    </form>
+
+                    <!-- Botón para Consultar Cita -->
+                    <div class="text-center mt-4">
+                        <button type="button" class="btn btn-outline-info" data-bs-toggle="modal"
+                            data-bs-target="#modalConsultarCita">
+                            <i class="bi bi-search"></i> Consultar Mi Cita
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <hr class="my-5">
+
+        <!-- Sección de Consejos (mantener) -->
         <div class="text-center my-5">
             <h2 class="mb-4 " id="tituloConsejos">Importancia de la higiene bucodental</h2>
             <p class="lead" id="parrafoConsejos">Mantener una buena higiene bucodental es esencial para prevenir
@@ -105,121 +201,6 @@
         <hr>
 
         </section>
-        <section id="pedirCita">
-            <h2 class="mb-4 text-center py-4 lead" id="textoPedirCita">Pedir Cita / Consultar Cita</h2>
-
-            <div class="container my-5 d-flex justify-content-center gap-3 flex-wrap">
-                <button type="button" class="btn btn-primary btn-lg" id="botonPedirCita" data-bs-toggle="modal"
-                    data-bs-target="#modalPedirCita" title="Solicitar una nueva cita">
-                    <i class="bi bi-calendar-plus"></i> Pedir Cita
-                </button>
-                <button type="button" class="btn btn-info btn-lg" id="botonConsultarCita" data-bs-toggle="modal"
-                    data-bs-target="#modalConsultarCita" title="Ver información de tu cita existente">
-                    <i class="bi bi-search"></i> Consultar Mi Cita
-                </button>
-            </div>
-        </section>
-
-        <!-- Modal para Pedir Cita -->
-        <div class="modal fade" id="modalPedirCita" tabindex="-1" aria-labelledby="modalPedirCitaLabel"
-            aria-hidden="true">
-            <div class="modal-dialog modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="modalPedirCitaLabel">Pedir Cita</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <form id="formularioCita" class="p-2">
-                            <!-- Fecha (Flatpickr) -->
-                            <div class="mb-3">
-                                <label for="fechaCita" class="form-label text-primary lead"><i
-                                        class="bi bi-calendar3"></i> Día disponible (Viernes)</label>
-                                <input type="text" class="form-control" id="fechaCita"
-                                    placeholder="Haz clic para seleccionar un viernes" required
-                                    title="Selecciona el día de tu cita">
-                                <small class="text-muted"><i class="bi bi-info-circle"></i> Solo se pueden seleccionar
-                                    viernes</small>
-                            </div>
-
-                            <!-- Hora -->
-                            <div class="mb-3">
-                                <label for="horaCita" class="form-label text-primary lead"><i class="bi bi-clock"></i>
-                                    Seleccione una hora</label>
-                                <select class="form-select" id="horaCita" required
-                                    title="Elige el horario de tu preferencia">
-                                    <option value="" selected disabled>Elige una hora</option>
-                                    <option value="15:15">15:15</option>
-                                    <option value="15:55">15:55</option>
-                                    <option value="16:35">16:35</option>
-                                    <option value="17:15">17:15</option>
-                                    <option value="17:55">17:55</option>
-                                    <option value="18:35">18:35</option>
-                                    <option value="19:15">19:15</option>
-                                    <option value="19:55">19:55</option>
-                                    <option value="20:35">20:35</option>
-                                </select>
-                            </div>
-
-                            <!-- Sillón -->
-                            <div class="mb-3">
-                                <label class="form-label text-primary lead"><i class="bi bi-pin-map"></i> Selecciona un
-                                    sillón</label>
-                                <div class="d-flex gap-3 justify-content-center">
-                                    <button type="button" class="btn sillon-btn" id="sillonRojo"
-                                        style="background-color: #DC3545; color: white; width: 120px; font-weight: bold;">
-                                        <i class="bi bi-check-circle"></i> Rojo
-                                    </button>
-                                    <button type="button" class="btn sillon-btn" id="sillonAzul"
-                                        style="background-color: #0D6EFD; color: white; width: 120px; font-weight: bold;">
-                                        <i class="bi bi-check-circle"></i> Azul
-                                    </button>
-                                    <button type="button" class="btn sillon-btn" id="sillonAmarillo"
-                                        style="background-color: #FFC107; color: black; width: 120px; font-weight: bold;">
-                                        <i class="bi bi-check-circle"></i> Amarillo
-                                    </button>
-                                </div>
-                                <input type="hidden" id="sillonCita" required>
-                            </div>
-
-                            <!-- Nombre completo -->
-                            <div class="mb-3">
-                                <label for="nombreCita" class="form-label text-primary lead"><i
-                                        class="bi bi-person"></i> Nombre completo</label>
-                                <input type="text" class="form-control" id="nombreCita"
-                                    placeholder="Escribe tu nombre completo" required
-                                    title="Ingresa tu nombre y apellidos">
-                                <div class="invalid-feedback" id="errorNombre"></div>
-                            </div>
-
-                            <!-- Email -->
-                            <div class="mb-3">
-                                <label for="emailCita" class="form-label text-primary lead"><i
-                                        class="bi bi-envelope"></i> Correo electrónico</label>
-                                <input type="email" class="form-control" id="emailCita"
-                                    placeholder="tunombre@alu.medac.es" required title="Usa tu correo institucional">
-                                <small class="text-muted"><i class="bi bi-info-circle"></i> Solo se aceptan correos
-                                    institucionales: @alu.medac.es</small>
-                                <div class="invalid-feedback" id="errorEmail"></div>
-                            </div>
-
-                            <!-- Información de disponibilidad -->
-                            <div id="avisoDisponibilidad" class="alert alert-info small" style="display: none;">
-                                <i class="bi bi-info-circle"></i>
-                                <strong>Información de disponibilidad:</strong>
-                                <div id="detalleDisponibilidad" style="margin-top: 0.5rem;"></div>
-                            </div>
-                        </form>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
-                            title="Cerrar sin guardar"><i class="bi bi-x-circle"></i> Cancelar</button>
-                        <button type="button" class="btn btn-primary" id="botonConfirmarCita" title="Guardar tu cita"><i
-                                class="bi bi-check-circle"></i> Confirmar Cita</button>
-                    </div>
-                </div>
-            </div>
-        </div>
 
         <!-- Modal para Consultar Cita -->
         <div class="modal fade" id="modalConsultarCita" tabindex="-1" aria-labelledby="modalConsultarCitaLabel"
