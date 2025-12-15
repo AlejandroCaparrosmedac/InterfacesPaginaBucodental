@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Administración - Higiene Bucodental</title>
+    <link rel="stylesheet" href="css/estilos.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- SheetJS para Excel -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.min.js"></script>
+    <!-- jsPDF para PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+    <!-- Flatpickr para calendario -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <style>
+        body.login-page {
+            background: linear-gradient(135deg, #2A6FB6 0%, #1e52a8 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        .login-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            width: 100%;
+            height: 100vh;
+        }
+
+        .login-container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            max-width: 400px;
+            width: 100%;
+            padding: 2rem;
+        }
+
+        .login-container .btn-volver {
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid white;
+            padding: 0.5rem 1.5rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .login-container .btn-volver:hover {
+            background-color: white;
+            color: #2A6FB6;
+            transform: translateY(-2px);
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .login-header h1 {
+            color: #2A6FB6;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .login-header p {
+            color: #666;
+            font-size: 0.95rem;
+        }
+
+        .login-form .form-control {
+            border-color: #2A6FB6;
+            height: 45px;
+        }
+
+        .login-form .form-control:focus {
+            border-color: #2A6FB6;
+            box-shadow: 0 0 0 0.2rem rgba(42, 111, 182, 0.25);
+        }
+
+        .login-form .btn-login {
+            background-color: #2A6FB6;
+            border-color: #2A6FB6;
+            height: 45px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .login-form .btn-login:hover {
+            background-color: #1e52a8;
+            border-color: #1e52a8;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(42, 111, 182, 0.3);
+        }
+
+        .alert {
+            border-radius: 5px;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Admin Dashboard Styles */
+        .admin-header {
+            background-color: #2A6FB6;
+            color: white;
+            padding: 1.5rem 0;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .admin-header h1 {
+            margin: 0;
+            font-weight: bold;
+        }
+
+        .admin-header .user-info {
+            font-size: 0.95rem;
+            margin-top: 0.5rem;
+        }
+
+        .admin-header .btn-logout {
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid white;
+            transition: all 0.3s ease;
+        }
+
+        .admin-header .btn-logout:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+            color: white;
+        }
+
+        .citas-section {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .citas-section h2 {
+            color: #2A6FB6;
+            font-weight: bold;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .citas-table {
+            background-color: white;
+            border-radius: 5px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .citas-table table {
+            margin-bottom: 0;
+        }
+
+        .citas-table thead {
+            background-color: #2A6FB6;
+            color: white;
+        }
+
+        .citas-table thead th {
+            border: none;
+            padding: 1rem;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .citas-table tbody td {
+            padding: 1rem;
+            text-align: center;
+            vertical-align: middle;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .citas-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .citas-table tbody tr:hover {
+            background-color: #f5f5f5;
+        }
+
+        .sillon-badge {
+            display: inline-block;
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-weight: bold;
+            color: white;
+            font-size: 0.85rem;
+        }
+
+        .sillon-rojo {
+            background-color: #DC3545;
+        }
+
+        .sillon-azul {
+            background-color: #0D6EFD;
+        }
+
+        .sillon-amarillo {
+            background-color: #FFC107;
+            color: black;
+        }
+
+        .buttons-container {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .buttons-container .btn {
+            min-width: 180px;
+            height: 45px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .btn-excel {
+            background-color: #28a745;
+            border-color: #28a745;
+            color: white;
+        }
+
+        .btn-excel:hover {
+            background-color: #218838;
+            border-color: #218838;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(40, 167, 69, 0.3);
+        }
+
+        .btn-pdf {
+            background-color: #dc3545;
+            border-color: #dc3545;
+            color: white;
+        }
+
+        .btn-pdf:hover {
+            background-color: #c82333;
+            border-color: #c82333;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(220, 53, 69, 0.3);
+        }
+
+        .no-citas {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: #999;
+        }
+
+        .no-citas i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: #ddd;
+        }
+
+        .no-citas p {
+            font-size: 1.1rem;
+            margin: 0;
+        }
+
+        .btn-eliminar {
+            background-color: #dc3545;
+            border-color: #dc3545;
+            color: white;
+            padding: 0.4rem 0.8rem;
+            font-size: 0.85rem;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 1px solid #dc3545;
+        }
+
+        .btn-eliminar:hover {
+            background-color: #c82333;
+            border-color: #c82333;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(220, 53, 69, 0.3);
+        }
+
+        .btn-eliminar:active {
+            transform: translateY(0);
+        }
+
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background-color: white;
+            border-radius: 5px;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            border-left: 4px solid #2A6FB6;
+        }
+
+        .stat-card h3 {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+        }
+
+        .stat-card .stat-number {
+            color: #2A6FB6;
+            font-size: 2.5rem;
+            font-weight: bold;
+        }
+
+        /* Estilos para agrupación por fecha */
+        .fecha-grupo-header td {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .fecha-grupo-header:hover td {
+            background: linear-gradient(135deg, #1e52a8 0%, #2A6FB6 100%) !important;
+        }
+
+        /* Icono de flecha para dropdown */
+        .arrow-icon {
+            display: inline-block;
+            transition: transform 0.3s ease;
+            margin-right: 8px;
+            font-size: 1rem;
+        }
+
+        .arrow-icon.collapsed {
+            transform: rotate(-90deg);
+        }
+
+        .cita-row {
+            transition: all 0.2s ease;
+        }
+
+        .cita-row:hover {
+            background-color: #e8f4ff !important;
+            transform: translateX(5px);
+            box-shadow: 0 2px 8px rgba(42, 111, 182, 0.15);
+        }
+
+        .fecha-separador {
+            height: 15px;
+        }
+
+        /* Botones de estado */
+        .btn-estado {
+            min-width: 110px;
+            font-weight: 600;
+            border: none;
+            transition: all 0.2s ease;
+            font-size: 0.85rem;
+        }
+
+        .btn-estado.pendiente {
+            background-color: #ffc107;
+            color: #000;
+        }
+
+        .btn-estado.pendiente:hover {
+            background-color: #e0a800;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 6px rgba(255, 193, 7, 0.4);
+        }
+
+        .btn-estado.completado {
+            background-color: #28a745;
+            color: #fff;
+        }
+
+        .btn-estado.completado:hover {
+            background-color: #218838;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 6px rgba(40, 167, 69, 0.4);
+        }
+
+        /* Fila completada */
+        .cita-row.completada {
+            background-color: #d4edda !important;
+            opacity: 0.85;
+        }
+
+        .cita-row.completada:hover {
+            background-color: #c3e6cb !important;
+        }
+
+        /* Botón PDF por día */
+        .btn-pdf-dia {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 4px 12px;
+            margin-right: 15px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            font-size: 0.85rem;
+        }
+
+        .btn-pdf-dia:hover {
+            background-color: #c82333;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 6px rgba(220, 53, 69, 0.4);
+        }
+
+        @media (max-width: 768px) {
+            .citas-table {
+                font-size: 0.85rem;
+            }
+
+            /* Ocultar columnas menos importantes en móvil */
+            .citas-table thead th:nth-child(1),
+            .citas-table tbody td:nth-child(1) {
+                display: none;
+                /* Ocultar fecha (ya está en el header) */
+            }
+
+            .citas-table thead th,
+            .citas-table tbody td {
+                padding: 0.5rem 0.3rem;
+                font-size: 0.8rem;
+            }
+
+            /* Hacer los badges más pequeños */
+            .sillon-badge {
+                padding: 0.2rem 0.5rem;
+                font-size: 0.7rem;
+            }
+
+            /* Botones de estado más compactos */
+            .btn-estado {
+                min-width: 70px;
+                font-size: 0.7rem;
+                padding: 0.3rem 0.5rem;
+            }
+
+            /* Botón eliminar más pequeño */
+            .btn-eliminar {
+                padding: 0.3rem 0.5rem;
+                font-size: 0.7rem;
+            }
+
+            .buttons-container {
+                flex-direction: column;
+            }
+
+            .buttons-container .btn {
+                width: 100%;
+            }
+
+            /* Header de fecha responsive */
+            .fecha-grupo-header td {
+                font-size: 0.9rem !important;
+                padding: 8px 10px !important;
+            }
+
+            /* Botones en el header más pequeños */
+            .btn-pdf-dia,
+            .btn-danger.btn-sm {
+                padding: 2px 6px;
+                font-size: 0.65rem;
+                margin-right: 5px;
+            }
+
+            .arrow-icon {
+                font-size: 0.8rem;
+            }
+
+            /* Stats cards en columna */
+            .stats-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            /* Admin header más compacto */
+            .admin-header h1 {
+                font-size: 1.3rem;
+            }
+
+            .admin-header .user-info {
+                font-size: 0.85rem;
+            }
+        }
+
+        /* Estilos para pantallas muy pequeñas (móviles) */
+        @media (max-width: 576px) {
+
+            /* Convertir tabla en tarjetas en móviles */
+            .citas-table table {
+                display: block;
+                overflow-x: auto;
+            }
+
+            .citas-table thead {
+                display: none;
+                /* Ocultar encabezados en móvil */
+            }
+
+            .citas-table tbody {
+                display: block;
+            }
+
+            .cita-row {
+                display: block;
+                margin-bottom: 0.5rem;
+                border: 1px solid #dee2e6;
+                border-radius: 5px;
+                padding: 0.5rem !important;
+            }
+
+            .cita-row td {
+                display: block;
+                text-align: left !important;
+                padding: 0.3rem 0.5rem !important;
+                border: none !important;
+            }
+
+            /* Mostrar etiquetas para cada campo */
+            .cita-row td:nth-child(2)::before {
+                content: "⏰ ";
+                font-weight: bold;
+            }
+
+            .cita-row td:nth-child(3)::before {
+                content: "🪑 ";
+                font-weight: bold;
+            }
+
+            .cita-row td:nth-child(4)::before {
+                content: "👤 ";
+                font-weight: bold;
+            }
+
+            .cita-row td:nth-child(5)::before {
+                content: "📧 ";
+                font-weight: bold;
+                display: block;
+            }
+
+            .cita-row td:nth-child(5) {
+                word-break: break-all;
+            }
+
+            .cita-row td:nth-child(6),
+            .cita-row td:nth-child(7) {
+                display: inline-block;
+                width: 48%;
+                margin-right: 2%;
+            }
+
+            /* Header de fecha en móvil */
+            .fecha-grupo-header td {
+                font-size: 0.85rem !important;
+                padding: 6px 8px !important;
+            }
+
+            /* Botones del header apilados */
+            .fecha-grupo-header span {
+                display: block !important;
+                float: none !important;
+                margin-top: 5px;
+            }
+
+            .btn-pdf-dia,
+            .btn-danger.btn-sm {
+                display: inline-block;
+                margin: 2px;
+                font-size: 0.6rem;
+                padding: 2px 5px;
+            }
+
+            /* Stats en una sola columna */
+            .stats-container {
+                grid-template-columns: 1fr;
+            }
+
+            /* Sección de días vetados responsive */
+            .row {
+                margin: 0;
+            }
+
+            .col-md-6 {
+                padding: 0.5rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Página de Login (inicialmente visible) -->
+    <div id="loginPage" class="login-page">
+        <div class="login-wrapper">
+            <div class="login-container">
+                <div class="login-header">
+                    <h1><i class="bi bi-shield-lock"></i> Acceso Admin</h1>
+                    <p>Panel de Administración de Citas</p>
+                </div>
+
+                <div id="alertaLogin"></div>
+
+                <form id="formularioLogin" class="login-form" autocomplete="off">
+                    <div class="mb-3">
+                        <label for="usuarioLogin" class="form-label">Usuario</label>
+                        <input type="text" class="form-control" id="usuarioLogin" placeholder="admin" required
+                            autocomplete="off">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="contrasenaLogin" class="form-label">Contraseña</label>
+                        <input type="password" class="form-control" id="contrasenaLogin" placeholder="••••••••" required
+                            autocomplete="off">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-login w-100">
+                        <i class="bi bi-box-arrow-in-right"></i> Iniciar Sesión
+                    </button>
+                </form>
+
+                <div class="mt-3 text-center">
+                    <p class="text-muted small">
+                        <strong>Credenciales de prueba:</strong><br>
+                        Usuario: <code>admin</code><br>
+                        Contraseña: <code>1234</code>
+                    </p>
+                </div>
+            </div>
+            <a href="Index.html" class="btn btn-volver" title="Volver al sitio principal">
+                <i class="bi bi-arrow-left"></i> Volver al Inicio
+            </a>
+        </div>
+    </div>
+
+    <!-- Panel de Administración (oculto inicialmente) -->
+    <div id="adminPage" style="display: none;">
+        <header class="admin-header">
+            <div class="container-fluid">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h1><i class="bi bi-graph-up"></i> Panel de Administración</h1>
+                        <div class="user-info">
+                            Bienvenido, <strong id="nombreUsuario">Admin</strong>
+                        </div>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button type="button" class="btn btn-info" id="botonAlternarVista" title="Cambiar vista">
+                            <i class="bi bi-calendar-x"></i> Ver Días Vetados
+                        </button>
+                        <a href="Index.html" class="btn btn-info" title="Volver al sitio principal">
+                            <i class="bi bi-house"></i> Inicio
+                        </a>
+                        <button type="button" class="btn btn-logout" id="botonLogout">
+                            <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main class="container-lg my-4">
+            <!-- Estadísticas -->
+            <div class="stats-container">
+                <div class="stat-card">
+                    <h3>Total de Citas</h3>
+                    <div class="stat-number" id="totalCitas">0</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Sillón Rojo</h3>
+                    <div class="stat-number" id="citasRojo">0</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Sillón Azul</h3>
+                    <div class="stat-number" id="citasAzul">0</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Sillón Amarillo</h3>
+                    <div class="stat-number" id="citasAmarillo">0</div>
+                </div>
+            </div>
+
+            <!-- Sección de Citas -->
+            <div class="citas-section" id="seccionCitas">
+                <h2>
+                    <i class="bi bi-calendar-check"></i>
+                    Listado de Citas Programadas
+                </h2>
+
+                <div class="citas-table">
+                    <table id="tablaCitas" class="table">
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Hora</th>
+                                <th>Sillón</th>
+                                <th>Nombre</th>
+                                <th>Correo</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="cuerpoTabla">
+                            <tr>
+                                <td colspan="7" class="no-citas">
+                                    <div>
+                                        <i class="bi bi-inbox"></i>
+                                        <p>No hay citas programadas</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Botones de Descarga -->
+                <div class="buttons-container">
+                    <button type="button" class="btn btn-pdf" id="botonDescargarPDF">
+                        <i class="bi bi-file-earmark-pdf"></i> Descargar en PDF
+                    </button>
+                </div>
+            </div>
+
+            <!-- Sección de Días Vetados -->
+            <div class="citas-section mt-4" id="seccionDiasVetados" style="display: none;">
+                <h2>
+                    <i class="bi bi-calendar-x"></i>
+                    Gestión de Días Vetados
+                </h2>
+                <p class="text-muted">
+                    <i class="bi bi-info-circle"></i> Selecciona los viernes que deseas deshabilitar en el calendario de
+                    citas.
+                </p>
+
+                <div class="row">
+                    <!-- Columna izquierda: Calendario para vetar días -->
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header bg-primary text-white">
+                                <h5 class="mb-0"><i class="bi bi-calendar-plus"></i> Vetar Nuevo Día</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label for="fechaVetar" class="form-label">Selecciona un viernes:</label>
+                                    <input type="text" id="fechaVetar" class="form-control"
+                                        placeholder="Selecciona una fecha">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="motivoVetar" class="form-label">Motivo (opcional):</label>
+                                    <input type="text" id="motivoVetar" class="form-control"
+                                        placeholder="Ej: Festivo, Vacaciones, etc.">
+                                </div>
+                                <button type="button" class="btn btn-danger w-100" id="botonVetarDia">
+                                    <i class="bi bi-x-circle"></i> Vetar Día
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Columna derecha: Lista de días vetados -->
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header bg-warning text-dark">
+                                <h5 class="mb-0"><i class="bi bi-list-ul"></i> Días Actualmente Vetados</h5>
+                            </div>
+                            <div class="card-body" style="max-height: 400px; overflow-y: auto;">
+                                <div id="listaDiasVetados">
+                                    <div class="text-center text-muted py-4">
+                                        <i class="bi bi-inbox" style="font-size: 2rem;"></i>
+                                        <p>No hay días vetados</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal de Confirmación para Eliminar Cita -->
+    <div class="modal fade" id="modalEliminarCita" tabindex="-1" aria-labelledby="modalEliminarCitaLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="modalEliminarCitaLabel">
+                        <i class="bi bi-exclamation-triangle"></i> Confirmar Eliminación
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p id="mensajeEliminarCita">¿Estás seguro de que deseas eliminar esta cita?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-danger" id="btnConfirmarEliminar">
+                        <i class="bi bi-trash"></i> Eliminar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Confirmación para Cerrar Sesión -->
+    <div class="modal fade" id="modalCerrarSesion" tabindex="-1" aria-labelledby="modalCerrarSesionLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-warning text-dark">
+                    <h5 class="modal-title" id="modalCerrarSesionLabel">
+                        <i class="bi bi-question-circle"></i> Cerrar Sesión
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>¿Estás seguro de que deseas cerrar sesión?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-warning" id="btnConfirmarCerrarSesion">
+                        <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Confirmación para Desvetar Día -->
+    <div class="modal fade" id="modalDesvetarDia" tabindex="-1" aria-labelledby="modalDesvetarDiaLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-warning text-dark">
+                    <h5 class="modal-title" id="modalDesvetarDiaLabel">
+                        <i class="bi bi-question-circle"></i> Confirmar Acción
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p id="mensajeDesvetarDia">¿Estás seguro de que deseas habilitar este día nuevamente?</p>
+                    <div class="alert alert-info mb-0">
+                        <small><i class="bi bi-info-circle"></i> Los usuarios podrán volver a seleccionar este día para
+                            pedir cita.</small>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-warning" id="btnConfirmarDesvetar">
+                        <i class="bi bi-check-circle"></i> Sí, Desvetar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Confirmación para Eliminar Todas las Citas de un Día -->
+    <div class="modal fade" id="modalEliminarTodasCitas" tabindex="-1" aria-labelledby="modalEliminarTodasCitasLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="modalEliminarTodasCitasLabel">
+                        <i class="bi bi-exclamation-triangle-fill"></i> Eliminar Todas las Citas
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="mensajeEliminarTodasCitas">
+                    <!-- El mensaje se actualiza dinámicamente -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-danger" id="btnConfirmarEliminarTodas">
+                        <i class="bi bi-trash-fill"></i> Sí, Eliminar Todas
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+        crossorigin="anonymous"></script>
+    <!-- Flatpickr script -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <!-- Flatpickr locale español -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
+    <script src="js/admin.js"></script>
+</body>
+
+</html>

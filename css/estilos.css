@@ -1,0 +1,1438 @@
+/* ============================================
+   IMPORTACIONES Y VARIABLES GLOBALES
+   ============================================ */
+
+/* Importar Google Fonts - Poppins para mejor legibilidad */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+/* Variables CSS para consistencia */
+:root {
+    /* Colores principales */
+    --primary-blue: #2A6FB6;
+    --primary-blue-dark: #1e52a8;
+    --primary-blue-light: #d5eaff;
+    --primary-blue-lighter: #e8f4ff;
+    --primary-blue-hover: #236099;
+
+    /* Colores de estado */
+    --success-green: #28a745;
+    --warning-yellow: #FFC107;
+    --danger-red: #DC3545;
+    --info-cyan: #17a2b8;
+
+    /* Escala de grises */
+    --gray-50: #fafbfc;
+    --gray-100: #f8f9fa;
+    --gray-200: #e9ecef;
+    --gray-300: #dee2e6;
+    --gray-400: #ced4da;
+    --gray-600: #6c757d;
+    --gray-800: #343a40;
+    --gray-900: #212529;
+
+    /* Sombras */
+    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.08);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.12);
+    --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.15);
+    --shadow-xl: 0 12px 32px rgba(0, 0, 0, 0.18);
+
+    /* Espaciado */
+    --spacing-xs: 0.25rem;
+    --spacing-sm: 0.5rem;
+    --spacing-md: 1rem;
+    --spacing-lg: 1.5rem;
+    --spacing-xl: 2rem;
+    --spacing-2xl: 3rem;
+
+    /* Border radius */
+    --radius-sm: 4px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    --radius-xl: 16px;
+    --radius-full: 9999px;
+
+    /* Transiciones */
+    --transition-fast: 150ms ease-in-out;
+    --transition-normal: 250ms ease-in-out;
+    --transition-slow: 350ms ease-in-out;
+}
+
+/* ============================================
+   ESTILOS GLOBALES
+   ============================================ */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+    font-size: 16px;
+}
+
+body {
+    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    line-height: 1.6;
+    color: var(--gray-900);
+    background-color: #ffffff;
+    overflow-x: hidden;
+}
+
+/* ============================================
+   HEADER Y NAVEGACIÓN
+   ============================================ */
+
+header {
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
+    margin-top: -2rem;
+    background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-blue-dark) 100%);
+    box-shadow: var(--shadow-md);
+    position: relative;
+}
+
+header::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg,
+            var(--primary-blue-light) 0%,
+            var(--primary-blue) 50%,
+            var(--primary-blue-light) 100%);
+}
+
+.navbar {
+    padding-top: 0% !important;
+    padding-bottom: 0% !important;
+    height: 80px;
+    background: transparent;
+    transition: var(--transition-normal);
+}
+
+
+#servicios {
+    font-weight: 600;
+    position: relative;
+    transition: var(--transition-normal);
+}
+
+#servicios::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 2px;
+    background-color: white;
+    transition: var(--transition-normal);
+}
+
+#servicios:hover::after {
+    width: 80%;
+}
+
+#contenedorNav {
+    margin-top: 1rem;
+    padding-bottom: var(--spacing-lg);
+    margin-top: 0% !important;
+    height: 70px;
+}
+
+#inicio {
+    margin-left: 5rem;
+    font-weight: 600;
+    padding-left: 0 !important;
+    position: relative;
+    transition: var(--transition-normal);
+}
+
+#inicio:hover {
+    transform: translateY(-2px);
+}
+
+.nav-link {
+    font-weight: 500;
+    transition: var(--transition-normal);
+    padding: var(--spacing-sm) var(--spacing-md) !important;
+}
+
+.nav-link:hover {
+    transform: translateY(-2px);
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+#buscador {
+    max-width: 220px;
+    margin-right: var(--spacing-md);
+    border-radius: var(--radius-full);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    padding: var(--spacing-sm) var(--spacing-md);
+    transition: var(--transition-normal);
+}
+
+#buscador:focus {
+    border-color: white;
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.2);
+    transform: scale(1.02);
+}
+
+#botonBuscar {
+    border-radius: var(--radius-full);
+    padding: var(--spacing-sm) var(--spacing-lg);
+    font-weight: 600;
+    transition: var(--transition-normal);
+    border: 2px solid white;
+}
+
+#botonBuscar:hover {
+    background-color: white;
+    color: var(--primary-blue);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+#tituloGrande {
+    text-align: center;
+    margin-top: -2rem;
+    font-weight: 700;
+    font-size: 2.5rem;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    letter-spacing: -0.5px;
+}
+
+#logo {
+    width: 100px;
+    height: auto;
+    margin: 0;
+    transition: var(--transition-normal);
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+#logo:hover {
+    transform: scale(1.05) rotate(5deg);
+}
+
+#logoDavante {
+    width: 150px;
+    height: auto;
+    margin: 0;
+    transition: var(--transition-normal);
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+#logoDavante:hover {
+    transform: scale(0.95);
+}
+
+/* ============================================
+   BADGES DE SILLÓN - ANCHO UNIFORME
+   ============================================ */
+
+.sillon-badge {
+    display: inline-block;
+    min-width: 75px;
+    /* Ancho mínimo para que todos sean iguales */
+    padding: 0.35rem 0.65rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-align: center;
+    border-radius: 0.375rem;
+    color: white;
+}
+
+.sillon-rojo {
+    background-color: #DC3545;
+}
+
+.sillon-azul {
+    background-color: #0D6EFD;
+}
+
+.sillon-amarillo {
+    background-color: #FFC107;
+    color: #000;
+}
+
+/* ============================================
+   ESTILOS DE ESTADO - PRESENTE/PENDIENTE
+   ============================================ */
+
+/* Botón de estado presente */
+.btn-estado.presente {
+    background-color: #28a745 !important;
+    color: white !important;
+    border-color: #28a745 !important;
+}
+
+.btn-estado.presente:hover {
+    background-color: #218838 !important;
+    border-color: #1e7e34 !important;
+}
+
+/* Botón de estado pendiente */
+.btn-estado.pendiente {
+    background-color: #FFC107 !important;
+    color: #000 !important;
+    border-color: #FFC107 !important;
+}
+
+.btn-estado.pendiente:hover {
+    background-color: #e0a800 !important;
+    border-color: #d39e00 !important;
+}
+
+/* Fila de cita presente */
+.cita-row.presente {
+    background-color: #d4edda !important;
+}
+
+.cita-row.presente td {
+    text-decoration: line-through;
+    opacity: 0.7;
+}
+
+/* ============================================
+   LAYOUT DE DOS COLUMNAS - CALENDARIO Y FORMULARIO
+   ============================================ */
+
+/* Columna del calendario */
+.calendar-column {
+    background: linear-gradient(135deg, #e8f4ff 0%, #d5eaff 100%);
+    padding: 3rem 2rem;
+    min-height: 700px;
+    border-right: 3px solid var(--primary-blue);
+    display: flex;
+    align-items: flex-start;
+    /* Cambiar de center a flex-start para alinear arriba */
+    justify-content: center;
+    border-bottom-left-radius: 12px;
+    /* Redondear esquina inferior izquierda */
+}
+
+.calendar-container {
+    width: 100%;
+    max-width: 450px;
+    padding-top: 0;
+}
+
+/* Columna del formulario */
+.form-column {
+    background: white;
+    padding: 3rem 2rem;
+    min-height: 700px;
+    display: flex;
+    align-items: flex-start;
+    /* Cambiar de center a flex-start para alinear arriba */
+    justify-content: center;
+    border-bottom-right-radius: 12px;
+    /* Redondear esquina inferior derecha */
+}
+
+.form-container {
+    width: 100%;
+    max-width: 500px;
+}
+
+/* Títulos de columnas */
+.column-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--primary-blue);
+    margin-bottom: 1.5rem;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.column-title i {
+    margin-right: 0.5rem;
+}
+
+/* Calendario inline de Flatpickr */
+.flatpickr-calendar.inline {
+    width: 100% !important;
+    max-width: 100%;
+    margin: 0;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    border-radius: var(--radius-lg);
+    border: 2px solid var(--primary-blue);
+    font-size: 1.2rem;
+}
+
+.flatpickr-calendar.inline .flatpickr-months {
+    background: var(--primary-blue);
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    padding: 1.5rem 0;
+}
+
+.flatpickr-calendar.inline .flatpickr-current-month {
+    color: white;
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.flatpickr-calendar.inline .flatpickr-weekday {
+    color: var(--primary-blue);
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.flatpickr-calendar.inline .flatpickr-day {
+    height: 70px;
+    /* Aumentar de 60px a 70px */
+    line-height: 70px;
+    font-size: 1.4rem;
+    /* Aumentar fuente también */
+    max-width: none;
+    flex: 1;
+}
+
+.flatpickr-calendar.inline .flatpickr-days {
+    width: 100% !important;
+}
+
+.flatpickr-calendar.inline .dayContainer {
+    width: 100% !important;
+    min-width: 100% !important;
+    max-width: 100% !important;
+}
+
+.flatpickr-calendar.inline .flatpickr-day.selected {
+    background: var(--primary-blue) !important;
+    border-color: var(--primary-blue) !important;
+}
+
+.flatpickr-calendar.inline .flatpickr-day.selected:hover {
+    background: var(--primary-blue-dark) !important;
+}
+
+.flatpickr-calendar.inline .flatpickr-day:hover {
+    background: var(--primary-blue-light);
+    border-color: var(--primary-blue);
+}
+
+/* Formulario en columna derecha */
+.form-column .form-label {
+    font-weight: 600;
+    color: var(--primary-blue);
+    margin-bottom: 0.75rem;
+    font-size: 1rem;
+}
+
+.form-column .form-label i {
+    margin-right: 0.5rem;
+}
+
+.form-column .form-control,
+.form-column .form-select {
+    border: 2px solid var(--gray-300);
+    border-radius: var(--radius-md);
+    padding: 0.75rem 1rem;
+    transition: all 0.3s ease;
+}
+
+.form-column .form-control:focus,
+.form-column .form-select:focus {
+    border-color: var(--primary-blue);
+    box-shadow: 0 0 0 0.2rem rgba(42, 111, 182, 0.25);
+}
+
+.form-column .form-control[readonly] {
+    background-color: var(--gray-100);
+    cursor: not-allowed;
+}
+
+/* Botón confirmar cita */
+.btn-confirmar-cita {
+    width: 100%;
+    padding: 1rem 2rem;
+    font-size: 1.2rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-blue-dark) 100%);
+    border: none;
+    border-radius: var(--radius-md);
+    color: white;
+    margin-top: 1.5rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(42, 111, 182, 0.3);
+}
+
+.btn-confirmar-cita:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(42, 111, 182, 0.4);
+    background: linear-gradient(135deg, var(--primary-blue-dark) 0%, var(--primary-blue) 100%);
+}
+
+.btn-confirmar-cita:active {
+    transform: translateY(0);
+}
+
+.btn-confirmar-cita i {
+    margin-right: 0.5rem;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+
+    .calendar-column,
+    .form-column {
+        min-height: auto;
+        padding: 2rem 1.5rem;
+        border-right: none;
+    }
+
+    .calendar-column {
+        border-bottom: 3px solid var(--primary-blue);
+    }
+
+    .column-title {
+        font-size: 1.5rem;
+    }
+
+    .flatpickr-calendar.inline {
+        max-width: 100%;
+    }
+}
+
+@media (max-width: 576px) {
+
+    .calendar-column,
+    .form-column {
+        padding: 1.5rem 1rem;
+    }
+
+    .column-title {
+        font-size: 1.25rem;
+    }
+
+    .btn-confirmar-cita {
+        font-size: 1rem;
+        padding: 0.875rem 1.5rem;
+    }
+}
+
+/* ============================================
+   SECCIONES Y CONTENIDO
+   ============================================ */
+
+#seccionConsejos {
+    background: linear-gradient(135deg, var(--primary-blue-lighter) 0%, var(--primary-blue-light) 100%);
+    padding: var(--spacing-2xl);
+    border-radius: var(--radius-lg);
+    margin-bottom: var(--spacing-2xl);
+    box-shadow: var(--shadow-lg);
+    text-align: center;
+    max-width: 50rem;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 5rem;
+    border: 1px solid rgba(42, 111, 182, 0.1);
+    transition: var(--transition-normal);
+}
+
+#seccionConsejos:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-xl);
+}
+
+
+#formulario {
+    background: linear-gradient(135deg, var(--primary-blue-lighter) 0%, var(--primary-blue-light) 100%);
+    max-width: 50rem;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 10rem;
+    padding: var(--spacing-2xl);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    border: 1px solid rgba(42, 111, 182, 0.1);
+}
+
+#botonForm {
+    background-color: var(--primary-blue);
+    color: white;
+    width: 18em;
+    margin-left: 12rem;
+    margin-right: 12rem;
+    margin-top: var(--spacing-xl);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-md) var(--spacing-xl);
+    font-weight: 600;
+    border: none;
+    transition: var(--transition-normal);
+    box-shadow: var(--shadow-sm);
+}
+
+#botonForm:hover {
+    background-color: var(--primary-blue-dark);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+#botonForm:active {
+    transform: translateY(0);
+}
+
+/* ============================================
+   CAROUSEL Y IMÁGENES
+   ============================================ */
+
+#img3,
+#img2,
+#img1 {
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    width: 80%;
+    height: 500px;
+    object-fit: cover;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 8rem;
+    margin-top: var(--spacing-xl);
+    transition: var(--transition-slow);
+    border: 3px solid white;
+}
+
+#img3:hover,
+#img2:hover,
+#img1:hover {
+    transform: scale(1.02);
+    box-shadow: var(--shadow-xl);
+}
+
+#img3 {
+    width: 80%;
+}
+
+#carrouselExample {
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#textoCarrousel {
+    background: linear-gradient(135deg, var(--primary-blue-light) 0%, var(--primary-blue-lighter) 100%);
+    color: var(--primary-blue);
+    font-weight: 600;
+    font-size: 1.3rem;
+    padding: var(--spacing-xl);
+    border-radius: var(--radius-lg);
+    margin-bottom: var(--spacing-xl);
+    box-shadow: var(--shadow-md);
+    text-align: center;
+    margin-top: 230px;
+    border: 2px solid rgba(42, 111, 182, 0.2);
+    font-style: italic;
+}
+
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+    filter: invert(36%) sepia(79%) saturate(4341%) hue-rotate(205deg) brightness(96%) contrast(101%);
+    color: var(--primary-blue);
+    width: 3rem;
+    height: 3rem;
+    background-size: 100%;
+    transition: var(--transition-normal);
+}
+
+.carousel-control-prev-icon:hover,
+.carousel-control-next-icon:hover {
+    transform: scale(1.2);
+}
+
+.carousel-control-prev,
+.carousel-control-next {
+    opacity: 0.7;
+    transition: var(--transition-normal);
+}
+
+.carousel-control-prev:hover,
+.carousel-control-next:hover {
+    opacity: 1;
+}
+
+/* ============================================
+   TEXTO Y TIPOGRAFÍA
+   ============================================ */
+
+#textoPedirCita {
+    text-align: center;
+    font-weight: 700;
+    font-size: 2.2rem;
+    color: var(--primary-blue);
+    margin-bottom: var(--spacing-xl);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+#tituloConsejos {
+    color: var(--primary-blue);
+    font-weight: 700;
+    font-size: 2rem;
+    margin-bottom: var(--spacing-lg);
+}
+
+#parrafoConsejos {
+    font-size: 1.2rem;
+    margin-bottom: var(--spacing-xl);
+    color: var(--primary-blue);
+    line-height: 1.8;
+}
+
+#titulo2Consejos {
+    color: var(--primary-blue);
+    margin-bottom: var(--spacing-md);
+    font-weight: 600;
+}
+
+.list-group-item {
+    border: 1px solid rgba(42, 111, 182, 0.15);
+    margin-bottom: var(--spacing-sm);
+    border-radius: var(--radius-sm) !important;
+    transition: var(--transition-normal);
+}
+
+.list-group-item:hover {
+    background-color: var(--primary-blue-lighter);
+    transform: translateX(8px);
+    border-color: var(--primary-blue);
+}
+
+/* ============================================
+   FOOTER
+   ============================================ */
+
+footer {
+    background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-blue-dark) 100%);
+    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.1);
+    position: relative;
+}
+
+footer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg,
+            var(--primary-blue-light) 0%,
+            var(--primary-blue) 50%,
+            var(--primary-blue-light) 100%);
+}
+
+.social-icons a {
+    transition: var(--transition-normal);
+    display: inline-block;
+}
+
+.social-icons a:hover {
+    transform: translateY(-4px) scale(1.1);
+    filter: drop-shadow(0 4px 8px rgba(255, 255, 255, 0.3));
+}
+
+/* ============================================
+   FORMULARIOS Y LABELS
+   ============================================ */
+
+label {
+    color: var(--primary-blue);
+    font-weight: 600;
+    margin-bottom: var(--spacing-sm);
+    font-size: 1rem;
+}
+
+.form-control,
+.form-select {
+    border-radius: var(--radius-md);
+    border: 2px solid var(--gray-300);
+    padding: var(--spacing-md);
+    transition: var(--transition-normal);
+    font-size: 1rem;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--primary-blue);
+    box-shadow: 0 0 0 3px rgba(42, 111, 182, 0.1);
+    transform: translateY(-1px);
+}
+
+/* ============================================
+   CALENDARIO
+   ============================================ */
+
+#contenedorCalendario {
+    margin-bottom: var(--spacing-xl);
+    align-items: center;
+}
+
+#CardCalendario {
+    box-shadow: var(--shadow-lg);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-xl);
+    align-items: center;
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 600px;
+    background: linear-gradient(135deg, var(--primary-blue-lighter) 0%, var(--primary-blue-light) 100%);
+    margin-top: -4rem;
+    border: 1px solid rgba(42, 111, 182, 0.2);
+    transition: var(--transition-normal);
+}
+
+#CardCalendario:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-xl);
+}
+
+#Tarjeta {
+    text-align: center;
+    background-color: white;
+    color: var(--primary-blue);
+    padding: var(--spacing-lg);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+}
+
+#tituloCalendario {
+    color: var(--primary-blue);
+    font-weight: 700;
+    margin: var(--spacing-md);
+    padding: var(--spacing-md);
+    text-align: center;
+    font-size: 1.5rem;
+}
+
+
+/* ============================================
+   ESTILOS PARA MODALES Y BOTONES
+   ============================================ */
+
+/* Botones de pedir y consultar cita */
+#botonPedirCita,
+#botonConsultarCita {
+    background-color: var(--primary-blue);
+    border-color: var(--primary-blue);
+    color: white;
+    font-weight: 700;
+    font-size: 1.1rem;
+    padding: var(--spacing-lg) var(--spacing-2xl);
+    border-radius: var(--radius-lg);
+    transition: var(--transition-normal);
+    box-shadow: var(--shadow-md);
+    min-width: 200px;
+    min-height: 56px;
+}
+
+#botonPedirCita:hover,
+#botonConsultarCita:hover {
+    background-color: var(--primary-blue-dark);
+    border-color: var(--primary-blue-dark);
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-lg);
+}
+
+#botonPedirCita:active,
+#botonConsultarCita:active {
+    transform: translateY(-1px);
+}
+
+#botonConsultarCita {
+    background-color: var(--info-cyan);
+    border-color: var(--info-cyan);
+}
+
+#botonConsultarCita:hover {
+    background-color: #138496;
+    border-color: #138496;
+}
+
+/* Botón Admin en navbar */
+.btn-warning {
+    font-weight: 600;
+    border-radius: var(--radius-md);
+    transition: var(--transition-normal);
+    box-shadow: var(--shadow-sm);
+}
+
+.btn-warning:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+/* Estilos del modal */
+.modal-content {
+    border-radius: var(--radius-lg);
+    border: none;
+    box-shadow: var(--shadow-xl);
+    overflow: hidden;
+}
+
+.modal-header {
+    background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-blue-dark) 100%);
+    color: white;
+    padding: var(--spacing-lg) var(--spacing-xl);
+    border-bottom: none;
+}
+
+.modal-header .modal-title {
+    font-weight: 700;
+    font-size: 1.5rem;
+}
+
+.modal-header .btn-close {
+    filter: brightness(0) invert(1);
+    opacity: 0.8;
+    transition: var(--transition-normal);
+}
+
+.modal-header .btn-close:hover {
+    opacity: 1;
+    transform: scale(1.1);
+}
+
+.modal-body {
+    background-color: var(--gray-50);
+    padding: var(--spacing-xl);
+}
+
+.modal-body .form-label {
+    color: var(--primary-blue);
+    font-weight: 600;
+    margin-bottom: var(--spacing-sm);
+    font-size: 1rem;
+}
+
+.modal-body .form-control,
+.modal-body .form-select {
+    border-color: var(--gray-300);
+    border-width: 2px;
+    border-radius: var(--radius-md);
+    padding: var(--spacing-md);
+    font-size: 1rem;
+    transition: var(--transition-normal);
+}
+
+.modal-body .form-control:focus,
+.modal-body .form-select:focus {
+    border-color: var(--primary-blue);
+    box-shadow: 0 0 0 3px rgba(42, 111, 182, 0.15);
+    transform: translateY(-1px);
+}
+
+.modal-footer {
+    background-color: var(--gray-50);
+    border-top: 2px solid var(--gray-200);
+    padding: var(--spacing-lg) var(--spacing-xl);
+}
+
+.modal-footer .btn-primary {
+    background-color: var(--primary-blue);
+    border-color: var(--primary-blue);
+    font-weight: 600;
+    padding: var(--spacing-md) var(--spacing-xl);
+    border-radius: var(--radius-md);
+    transition: var(--transition-normal);
+    min-width: 120px;
+}
+
+.modal-footer .btn-primary:hover {
+    background-color: var(--primary-blue-dark);
+    border-color: var(--primary-blue-dark);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.modal-footer .btn-secondary {
+    font-weight: 600;
+    padding: var(--spacing-md) var(--spacing-xl);
+    border-radius: var(--radius-md);
+    transition: var(--transition-normal);
+    min-width: 120px;
+}
+
+.modal-footer .btn-secondary:hover {
+    transform: translateY(-2px);
+}
+
+
+/* ============================================
+   VALIDACIONES EN FORMULARIOS
+   ============================================ */
+
+.form-control.is-invalid,
+.form-select.is-invalid {
+    border-color: var(--danger-red);
+    background-image: none;
+}
+
+.form-control.is-invalid:focus,
+.form-select.is-invalid:focus {
+    border-color: var(--danger-red);
+    box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.15);
+}
+
+.invalid-feedback {
+    display: block;
+    color: var(--danger-red);
+    font-size: 0.9rem;
+    margin-top: var(--spacing-xs);
+    font-weight: 500;
+}
+
+/* ============================================
+   ALERTAS
+   ============================================ */
+
+.alert {
+    border-radius: var(--radius-md);
+    margin-bottom: var(--spacing-md);
+    animation: slideDown 0.4s ease;
+    border: none;
+    box-shadow: var(--shadow-sm);
+    font-weight: 500;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-15px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.alert-info {
+    background-color: #e8f4ff;
+    color: var(--primary-blue);
+    border-left: 4px solid var(--primary-blue);
+}
+
+.alert-success {
+    background-color: #d4edda;
+    color: #155724;
+    border-left: 4px solid var(--success-green);
+}
+
+.alert-danger {
+    background-color: #f8d7da;
+    color: #721c24;
+    border-left: 4px solid var(--danger-red);
+}
+
+.alert-warning {
+    background-color: #fff3cd;
+    color: #856404;
+    border-left: 4px solid var(--warning-yellow);
+}
+
+/* ============================================
+   FLATPICKR CALENDARIO
+   ============================================ */
+
+.flatpickr-calendar {
+    background-color: white;
+    border: 2px solid var(--primary-blue);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    font-family: 'Poppins', sans-serif;
+}
+
+.flatpickr-day.selected {
+    background-color: var(--primary-blue);
+    border-color: var(--primary-blue);
+    font-weight: 600;
+}
+
+.flatpickr-day.today {
+    border-color: var(--primary-blue);
+    color: var(--primary-blue);
+    font-weight: 700;
+}
+
+.flatpickr-day:hover {
+    background-color: var(--primary-blue-light);
+    color: var(--primary-blue);
+    border-radius: var(--radius-sm);
+}
+
+.flatpickr-prev,
+.flatpickr-next {
+    color: var(--primary-blue);
+    transition: var(--transition-normal);
+}
+
+.flatpickr-prev:hover,
+.flatpickr-next:hover {
+    color: var(--primary-blue-dark);
+    transform: scale(1.1);
+}
+
+.flatpickr-current-month {
+    font-weight: 600;
+    color: var(--primary-blue);
+}
+
+/* Sección de botones de cita */
+#pedirCita>div {
+    padding: var(--spacing-2xl) 0;
+    background: linear-gradient(135deg, var(--gray-50) 0%, white 100%);
+    border-radius: var(--radius-lg);
+    margin: var(--spacing-2xl) auto;
+}
+
+/* ============================================
+   DISPONIBILIDAD DE CITAS
+   ============================================ */
+
+select option:disabled {
+    color: var(--gray-600);
+    background-color: var(--gray-100);
+}
+
+select:disabled,
+select option:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.form-select:disabled {
+    background-color: var(--gray-200);
+    cursor: not-allowed;
+}
+
+.alert-disponibilidad {
+    margin-bottom: var(--spacing-md);
+    border-left: 4px solid var(--warning-yellow);
+    background-color: #fff3cd;
+    color: #856404;
+    border-radius: var(--radius-md);
+    padding: var(--spacing-md);
+}
+
+.alert-disponibilidad strong {
+    font-weight: 700;
+}
+
+.badge-ocupado {
+    background-color: var(--danger-red);
+    color: white;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: var(--radius-full);
+    font-size: 0.75rem;
+    margin-left: var(--spacing-sm);
+    font-weight: 600;
+}
+
+.badge-disponible {
+    background-color: var(--success-green);
+    color: white;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: var(--radius-full);
+    font-size: 0.75rem;
+    margin-left: var(--spacing-sm);
+    font-weight: 600;
+}
+
+/* ============================================
+   BOTONES DE SILLÓN
+   ============================================ */
+
+.sillon-btn {
+    border: 3px solid transparent;
+    border-radius: var(--radius-lg);
+    transition: var(--transition-normal);
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    min-height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-sm);
+    box-shadow: var(--shadow-sm);
+}
+
+.sillon-btn:hover:not(:disabled) {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: var(--shadow-lg);
+    border-color: rgba(0, 0, 0, 0.2);
+}
+
+.sillon-btn.active {
+    border: 3px solid rgba(0, 0, 0, 0.4);
+    box-shadow: var(--shadow-xl);
+    transform: scale(1.08);
+}
+
+.sillon-btn i {
+    font-size: 1.3rem;
+}
+
+#sillonRojo.sillon-disabled,
+#sillonAzul.sillon-disabled,
+#sillonAmarillo.sillon-disabled {
+    opacity: 0.5 !important;
+    cursor: not-allowed !important;
+    pointer-events: none !important;
+    filter: grayscale(100%) !important;
+    background-color: var(--gray-600) !important;
+    color: white !important;
+    border-color: var(--gray-600) !important;
+}
+
+/* ============================================
+   UTILIDADES Y HELPERS
+   ============================================ */
+
+.text-muted {
+    color: var(--gray-600) !important;
+    font-size: 0.9rem;
+}
+
+small.text-muted {
+    display: block;
+    margin-top: var(--spacing-xs);
+}
+
+hr {
+    border-color: var(--gray-300);
+    opacity: 0.3;
+    margin: var(--spacing-2xl) 0;
+}
+
+/* Smooth scrolling para secciones */
+section {
+    scroll-margin-top: 100px;
+}
+
+/* Mejoras de accesibilidad */
+*:focus-visible {
+    outline: 3px solid var(--primary-blue);
+    outline-offset: 2px;
+}
+
+button:focus-visible,
+a:focus-visible {
+    outline: 3px solid var(--primary-blue);
+    outline-offset: 3px;
+}
+
+/* Animación de carga */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.fade-in {
+    animation: fadeIn 0.5s ease-in;
+}
+
+/* Responsive improvements */
+@media (max-width: 768px) {
+    :root {
+        font-size: 14px;
+    }
+
+    #tituloGrande {
+        font-size: 2rem;
+    }
+
+    #inicio {
+        margin-left: 1rem;
+    }
+
+    .sillon-btn {
+        min-height: 50px;
+        font-size: 1rem;
+    }
+
+    #botonPedirCita,
+    #botonConsultarCita {
+        min-width: 160px;
+        font-size: 1rem;
+        padding: var(--spacing-md) var(--spacing-lg);
+    }
+}
+
+@media (max-width: 576px) {
+    #seccionConsejos {
+        padding: var(--spacing-lg);
+        margin-top: 3rem;
+    }
+
+    #botonForm {
+        width: 100%;
+        margin-left: 0;
+        margin-right: 0;
+    }
+}
+
+/* ============================================
+   FLATPICKR - CALENDARIO INTERACTIVO
+   ============================================ */
+
+.flatpickr-calendar {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border: 1px solid #e9ecef;
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.flatpickr-innerContainer {
+    padding: 1rem 1.5rem;
+    width: 100%;
+}
+
+.flatpickr-months {
+    padding: 0 0 1rem 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.flatpickr-month {
+    height: auto;
+    padding: 0.5rem 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.flatpickr-prev-month,
+.flatpickr-next-month {
+    color: white;
+    background-color: #5DADE2;
+    background-image: linear-gradient(135deg, #5DADE2 0%, #3498DB 100%);
+    transition: all 0.3s ease;
+    flex-shrink: 0;
+    padding: 0.5rem 0.75rem;
+    font-size: 1.8rem;
+    cursor: pointer;
+    border-radius: 10px;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 60px;
+    height: 60px;
+    box-shadow: 0 6px 16px rgba(93, 173, 226, 0.4);
+    font-weight: bold;
+}
+
+.flatpickr-prev-month:hover,
+.flatpickr-next-month:hover {
+    color: white;
+    background-color: #3498DB;
+    background-image: linear-gradient(135deg, #3498DB 0%, #2E86C1 100%);
+    transform: scale(1.2);
+    box-shadow: 0 8px 24px rgba(93, 173, 226, 0.6);
+}
+
+.flatpickr-current-month {
+    color: #2c3e50;
+    font-weight: 600;
+    flex: 1;
+    text-align: center;
+    padding: 0 0.5rem;
+    white-space: nowrap;
+    min-width: 150px;
+}
+
+.flatpickr-weekdays {
+    background: transparent;
+    padding: 0.25rem 0 0.5rem 0;
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 0;
+    margin-bottom: 0.25rem;
+}
+
+.flatpickr-weekday {
+    color: #6c757d;
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-align: center;
+    padding: 0.5rem;
+    width: 100%;
+}
+
+.flatpickr-days {
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(45px, 1fr));
+    gap: 4px;
+}
+
+.flatpickr-day {
+    color: #2c3e50;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    margin: 0;
+    padding: 0.5rem;
+    text-align: center;
+    width: 100%;
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.flatpickr-day.prevMonthDay,
+.flatpickr-day.nextMonthDay {
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.flatpickr-day:hover:not(.disabled) {
+    background: #2A6FB6;
+    color: white;
+    border-color: #2A6FB6;
+}
+
+.flatpickr-day.selected {
+    background: #2A6FB6;
+    border-color: #2A6FB6;
+    color: white;
+    font-weight: 600;
+}
+
+.flatpickr-day.today {
+    border-color: #2A6FB6;
+    background: transparent;
+    font-weight: 600;
+}
+
+.flatpickr-day.disabled {
+    color: #e9ecef;
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+.flatpickr-day.inRange {
+    background: rgba(42, 111, 182, 0.1);
+    border-color: #2A6FB6;
+}
+
+#calendarioInline {
+    margin: 0 auto 1.5rem;
+}

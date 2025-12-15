@@ -1,0 +1,324 @@
+<!Doctype html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Higiene bucodental</title>
+    <link rel="stylesheet" href="css/estilos.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Flatpickr para calendario interactivo -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <!-- SheetJS para Excel -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.min.js"></script>
+</head>
+
+<body>
+    <header class=" text-center text-white py-4 mb-0 p-0 fixed-top">
+        <nav class="navbar navbar-expand-lg  navbar-dark w-100 p-0 m-0 ">
+            <div class="container-fluid d-flex align-items-center">
+                <img src="img/sonrisa.png" alt="Logo" class="d-inline-block align-middle me-2" id="logo">
+                <img src="img/logoDavante.svg" alt="LogoDavante" class="d-inline-block align-middle" id="logoDavante">
+                <a class="navbar-brand" href="#"></a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false"
+                    aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNavDropdown">
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a class="nav-link active" aria-current="page" href="#" id="inicio">Inicio</a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                                aria-expanded="false" id="servicios">
+                                Servicios
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="#pedirCita">Pedir cita</a></li>
+                                <li><a class="dropdown-item" href="#tituloConsejos">Recomendaciones</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <a href="admin.html" class="btn btn-warning ms-auto" title="Acceder al panel de administración">
+                        <i class="bi bi-shield-lock"></i> Admin
+                    </a>
+                </div>
+            </div>
+        </nav>
+        <div class="py-4 text-white text-center w-100" id="contenedorNav">
+            <h1 id="tituloGrande">Higiene Bucodental</h1>
+            <p>Consejos para mantener una sonrisa saludable</p>
+        </div>
+    </header>
+    <main class="container-fluid my-5 px-0" style="padding-top: 180px;">
+        <!-- Layout de Dos Columnas -->
+        <div class="row g-0">
+            <!-- COLUMNA IZQUIERDA: Calendario -->
+            <div class="col-md-6 calendar-column rounded-circle">
+                <div class="calendar-container">
+                    <h2 class="column-title">
+                        <i class="bi bi-calendar-week"></i> Selecciona tu día de cita
+                    </h2>
+                    <p class="text-center text-muted mb-4">
+                        <i class="bi bi-info-circle"></i> Solo puedes seleccionar viernes
+                    </p>
+                    <!-- Calendario Flatpickr Inline -->
+                    <div id="calendarioInline"></div>
+                </div>
+            </div>
+
+            <!-- COLUMNA DERECHA: Formulario de Cita -->
+            <div class="col-md-6 form-column">
+                <div class="form-container">
+                    <h2 class="column-title">
+                        <i class="bi bi-clipboard-check"></i> Completa tu cita
+                    </h2>
+
+                    <form id="formularioCita" class="p-3">
+                        <!-- Campo oculto para fecha (se actualiza desde calendario) -->
+                        <input type="hidden" id="fechaCita" required>
+
+                        <!-- Hora -->
+                        <div class="mb-4">
+                            <label for="horaCita" class="form-label">
+                                <i class="bi bi-clock"></i> Hora de la cita
+                            </label>
+                            <select class="form-select form-select-lg" id="horaCita" required
+                                title="Elige el horario de tu preferencia">
+                                <option value="" selected disabled>Elige una hora</option>
+                                <option value="15:15">15:15</option>
+                                <option value="15:55">15:55</option>
+                                <option value="16:35">16:35</option>
+                                <option value="17:15">17:15</option>
+                                <option value="17:55">17:55</option>
+                                <option value="18:35">18:35</option>
+                                <option value="19:15">19:15</option>
+                                <option value="19:55">19:55</option>
+                                <option value="20:35">20:35</option>
+                            </select>
+                        </div>
+
+                        <!-- Sillón -->
+                        <div class="mb-4">
+                            <label class="form-label">
+                                <i class="bi bi-pin-map"></i> Selecciona un sillón
+                            </label>
+                            <div class="d-flex gap-3 justify-content-center">
+                                <button type="button" class="btn sillon-btn" id="sillonRojo"
+                                    style="background-color: #DC3545; color: white; width: 120px; font-weight: bold;">
+                                    <i class="bi bi-check-circle"></i> Rojo
+                                </button>
+                                <button type="button" class="btn sillon-btn" id="sillonAzul"
+                                    style="background-color: #0D6EFD; color: white; width: 120px; font-weight: bold;">
+                                    <i class="bi bi-check-circle"></i> Azul
+                                </button>
+                                <button type="button" class="btn sillon-btn" id="sillonAmarillo"
+                                    style="background-color: #FFC107; color: black; width: 120px; font-weight: bold;">
+                                    <i class="bi bi-check-circle"></i> Amarillo
+                                </button>
+                            </div>
+                            <input type="hidden" id="sillonCita" required>
+                        </div>
+
+                        <!-- Nombre completo -->
+                        <div class="mb-4">
+                            <label for="nombreCita" class="form-label">
+                                <i class="bi bi-person"></i> Nombre completo
+                            </label>
+                            <input type="text" class="form-control form-control-lg" id="nombreCita"
+                                placeholder="Escribe tu nombre completo" required title="Ingresa tu nombre y apellidos">
+                            <div class="invalid-feedback" id="errorNombre"></div>
+                        </div>
+
+                        <!-- Email -->
+                        <div class="mb-4">
+                            <label for="emailCita" class="form-label">
+                                <i class="bi bi-envelope"></i> Correo electrónico
+                            </label>
+                            <input type="email" class="form-control form-control-lg" id="emailCita"
+                                placeholder="tunombre@alu.medac.es" required title="Usa tu correo institucional">
+                            <small class="text-muted">
+                                <i class="bi bi-info-circle"></i> Solo se aceptan correos institucionales: @alu.medac.es
+                                o @medac.es
+                            </small>
+                            <div class="invalid-feedback" id="errorEmail"></div>
+                        </div>
+
+                        <!-- Información de disponibilidad -->
+                        <div id="avisoDisponibilidad" class="alert alert-info small" style="display: none;">
+                            <i class="bi bi-info-circle"></i>
+                            <strong>Información de disponibilidad:</strong>
+                            <div id="detalleDisponibilidad" style="margin-top: 0.5rem;"></div>
+                        </div>
+
+                        <!-- Botón Confirmar -->
+                        <button type="button" class="btn btn-confirmar-cita text-white" id="botonConfirmarCita">
+                            <i class="bi bi-check-circle-fill"></i> Confirmar Cita
+                        </button>
+                    </form>
+
+                    <!-- Botón para Consultar Cita -->
+                    <div class="text-center mt-4">
+                        <button type="button" class="btn btn-outline-info" data-bs-toggle="modal"
+                            data-bs-target="#modalConsultarCita">
+                            <i class="bi bi-search"></i> Consultar Mi Cita
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <hr class="my-5">
+
+        <!-- Sección de Consejos (mantener) -->
+        <div class="text-center my-5">
+            <h2 class="mb-4 " id="tituloConsejos">Importancia de la higiene bucodental</h2>
+            <p class="lead" id="parrafoConsejos">Mantener una buena higiene bucodental es esencial para prevenir
+                enfermedades dentales y mantener una sonrisa saludable. Una correcta rutina de cuidado dental no solo
+                mejora la apariencia de los dientes, sino que también contribuye a la salud general del cuerpo.</p>
+            <section id="seccionConsejos">
+                <h2 class="mb-4  lead fw-bold" id="titulo2Consejos">Consejos para una buena higiene bucodental</h2>
+                <ul class="list-group">
+                    <li class="list-group-item lead">Cepíllate los dientes al menos dos veces al día con una pasta
+                        dental con flúor.</li>
+                    <li class="list-group-item lead">Usa hilo dental diariamente para eliminar la placa entre los
+                        dientes.</li>
+                    <li class="list-group-item lead">Limita el consumo de alimentos y bebidas azucaradas.</li>
+                    <li class="list-group-item lead">Visita a tu dentista regularmente para chequeos y limpiezas
+                        profesionales.</li>
+                    <li class="list-group-item lead">Evita el tabaco, ya que puede causar enfermedades de las encías y
+                        cáncer oral.</li>
+                </ul>
+            </section>
+        </div><br><br>
+        <hr>
+
+        </section>
+
+        <!-- Modal para Consultar Cita -->
+        <div class="modal fade" id="modalConsultarCita" tabindex="-1" aria-labelledby="modalConsultarCitaLabel"
+            aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalConsultarCitaLabel">Consultar Cita</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="formularioConsulta">
+                            <div class="mb-3">
+                                <label for="emailConsulta" class="form-label text-primary lead"><i
+                                        class="bi bi-envelope"></i> Correo electrónico</label>
+                                <input type="email" class="form-control" id="emailConsulta"
+                                    placeholder="tunombre@alu.medac.es" required
+                                    title="Ingresa el correo con el que pediste la cita">
+                                <small class="text-muted">Ingresa tu correo para consultar tu cita</small>
+                            </div>
+                        </form>
+                        <div id="resultadoConsulta"></div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+                            title="Cerrar ventana"><i class="bi bi-x-circle"></i> Cerrar</button>
+                        <button type="button" class="btn btn-primary" id="botonBuscarCita" title="Buscar mi cita"><i
+                                class="bi bi-search"></i> Buscar Cita</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal de Confirmación de Cita -->
+        <div class="modal fade" id="modalConfirmacionCita" tabindex="-1" aria-labelledby="modalConfirmacionCitaLabel"
+            aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header bg-success text-white">
+                        <h5 class="modal-title" id="modalConfirmacionCitaLabel">
+                            <i class="bi bi-check-circle-fill"></i> ¡Cita Confirmada!
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="alert alert-success" role="alert">
+                            <h6 class="alert-heading"><i class="bi bi-calendar-check"></i> Tu cita ha sido registrada
+                                exitosamente</h6>
+                            <hr>
+                            <p class="mb-0">A continuación se muestran los detalles de tu cita:</p>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-body">
+                                <h6 class="card-subtitle mb-3 text-muted">Información de la Cita</h6>
+                                <ul class="list-unstyled">
+                                    <li class="mb-2"><strong><i class="bi bi-calendar3"></i> Fecha:</strong> <span
+                                            id="confirmFecha"></span></li>
+                                    <li class="mb-2"><strong><i class="bi bi-clock"></i> Hora:</strong> <span
+                                            id="confirmHora"></span></li>
+                                    <li class="mb-2"><strong><i class="bi bi-pin-map"></i> Sillón:</strong> <span
+                                            id="confirmSillon"></span></li>
+                                    <li class="mb-2"><strong><i class="bi bi-person"></i> Nombre:</strong> <span
+                                            id="confirmNombre"></span></li>
+                                    <li class="mb-2"><strong><i class="bi bi-envelope"></i> Email:</strong> <span
+                                            id="confirmEmail"></span></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="alert alert-info mt-3" role="alert">
+                            <small><i class="bi bi-info-circle"></i> Recibirás un recordatorio en tu correo
+                                electrónico.</small>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-success" data-bs-dismiss="modal">
+                            <i class="bi bi-check-lg"></i> Entendido
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+    <footer class=" text-white py-3 mt-5">
+        <p class="text-center mt-2 mb-0">&copy; 2024 Higiene Bucodental. Todos los derechos reservados.</p>
+        <div class="container-fluid d-flex justify-content-end align-items-center text-white">
+            <p class="mb-0 me-3">Síguenos en nuestras redes sociales</p>
+            <div class="social-icons">
+                <div class="social-icons">
+                    <a href="https://www.facebook.com/" target="_blank" class="text-white me-3">
+                        <i class="bi bi-facebook" style="font-size: 1.5rem;"></i>
+                    </a>
+                    <a href="https://www.instagram.com/" target="_blank" class="text-white me-3">
+                        <i class="bi bi-instagram" style="font-size: 1.5rem;"></i>
+                    </a>
+                    <a href="https://twitter.com/" target="_blank" class="text-white">
+                        <i class="bi bi-twitter" style="font-size: 1.5rem;"></i>
+                    </a>
+                </div>
+
+            </div>
+    </footer>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+        crossorigin="anonymous"></script>
+    <!-- Flatpickr script -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <!-- Flatpickr locale español -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
+    <!-- Script de configuración (personalizable) -->
+    <script src="js/config.js"></script>
+    <!-- Script principal de la aplicación -->
+    <script src="js/app.js"></script>
+    <!-- Script de datos de prueba (opcional) -->
+    <!-- <script src="js/prueba.js"></script> -->
+
+</body>
+
+</html>

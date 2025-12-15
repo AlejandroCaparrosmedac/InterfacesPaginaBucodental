@@ -1,0 +1,13 @@
+{
+    "name": "higiene-bucodental/sistema-citas",
+    "description": "Sistema de gestión de citas para clínica dental",
+    "type": "project",
+    "require": {
+        "phpmailer/phpmailer": "^6.9"
+    },
+    "autoload": {
+        "classmap": [
+            "EmailService.php"
+        ]
+    }
+}
