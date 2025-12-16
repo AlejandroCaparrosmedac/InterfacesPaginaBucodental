@@ -115,9 +115,19 @@
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
 
+        .admin-logo {
+            filter: brightness(1.1);
+            transition: all 0.3s ease;
+        }
+
+        .admin-logo:hover {
+            transform: scale(1.05);
+        }
+
         .admin-header h1 {
             margin: 0;
             font-weight: bold;
+            font-size: 1.5rem;
         }
 
         .admin-header .user-info {
@@ -344,11 +354,17 @@
 
         .stat-card {
             background-color: white;
-            border-radius: 5px;
+            border-radius: 8px;
             padding: 1.5rem;
             text-align: center;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
             border-left: 4px solid #2A6FB6;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transform: translateY(-2px);
         }
 
         .stat-card h3 {
@@ -654,10 +670,16 @@
         <header class="admin-header">
             <div class="container-fluid">
                 <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h1><i class="bi bi-graph-up"></i> Panel de Administración</h1>
-                        <div class="user-info">
-                            Bienvenido, <strong id="nombreUsuario">Admin</strong>
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="d-flex gap-2">
+                            <img src="img/sonrisa.png" alt="Logo" class="admin-logo" style="height: 45px; width: auto;">
+                            <img src="img/logoDavante.svg" alt="LogoDavante" class="admin-logo" style="height: 45px; width: auto;">
+                        </div>
+                        <div>
+                            <h1><i class="bi bi-graph-up"></i> Panel de Administración</h1>
+                            <div class="user-info">
+                                Bienvenido, <strong id="nombreUsuario">Admin</strong>
+                            </div>
                         </div>
                     </div>
                     <div class="d-flex gap-2">
@@ -675,7 +697,7 @@
             </div>
         </header>
 
-        <main class="container-lg my-4">
+        <main class="container-lg my-4" style="background-color: #f5f6fa; min-height: calc(100vh - 200px); padding: 2rem; border-radius: 10px;">
             <!-- Estadísticas -->
             <div class="stats-container">
                 <div class="stat-card">
