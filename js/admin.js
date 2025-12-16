@@ -160,8 +160,33 @@ function mostrarCitasEnTabla(citas) {
         return;
     }
 
+
+    // FILTRAR CITAS: Solo mostrar citas de hoy en adelante
+    const hoy = new Date();
+    hoy.setHours(0, 0, 0, 0); // Establecer a medianoche para comparar solo fechas
+    
+    const citasFuturas = citas.filter(cita => {
+        const fechaCita = new Date(cita.fecha + 'T00:00:00');
+        return fechaCita >= hoy;
+    });
+
+    // Si no hay citas futuras, mostrar mensaje
+    if (citasFuturas.length === 0) {
+        cuerpoTabla.innerHTML = `
+            <tr>
+                <td colspan="7" class="no-citas">
+                    <div>
+                        <i class="bi bi-inbox"></i>
+                        <p>No hay citas programadas (solo se muestran citas de hoy en adelante)</p>
+                    </div>
+                </td>
+            </tr>
+        `;
+        return;
+    }
+
     // Ordenar citas por fecha y hora
-    citas.sort((a, b) => {
+    citasFuturas.sort((a, b) => {
         const dateA = new Date(a.fecha);
         const dateB = new Date(b.fecha);
         if (dateA.getTime() !== dateB.getTime()) return dateA - dateB;
@@ -170,7 +195,7 @@ function mostrarCitasEnTabla(citas) {
 
     // Agrupar citas por fecha
     const citasPorFecha = {};
-    citas.forEach(cita => {
+    citasFuturas.forEach(cita => {
         if (!citasPorFecha[cita.fecha]) {
             citasPorFecha[cita.fecha] = [];
         }
@@ -277,10 +302,19 @@ function mostrarCitasEnTabla(citas) {
  * Actualiza las estadísticas
  */
 function actualizarEstadisticas(citas) {
-    const total = citas.length;
-    const rojo = citas.filter(c => c.sillon === 'Rojo').length;
-    const azul = citas.filter(c => c.sillon === 'Azul').length;
-    const amarillo = citas.filter(c => c.sillon === 'Amarillo').length;
+    // FILTRAR: Solo contar citas de hoy en adelante
+    const hoy = new Date();
+    hoy.setHours(0, 0, 0, 0); // Establecer a medianoche para comparar solo fechas
+    
+    const citasFuturas = citas.filter(cita => {
+        const fechaCita = new Date(cita.fecha + 'T00:00:00');
+        return fechaCita >= hoy;
+    });
+
+    const total = citasFuturas.length;
+    const rojo = citasFuturas.filter(c => c.sillon === 'Rojo').length;
+    const azul = citasFuturas.filter(c => c.sillon === 'Azul').length;
+    const amarillo = citasFuturas.filter(c => c.sillon === 'Amarillo').length;
 
     document.getElementById('totalCitas').textContent = total;
     document.getElementById('citasRojo').textContent = rojo;
@@ -1331,4 +1365,3 @@ mostrarPanelAdmin = function (usuario, nombre) {
 
 // Exportar nuevas funciones globales
 window.toggleGrupoFecha = toggleGrupoFecha;
-
