@@ -639,6 +639,11 @@ function generarPDFConJsPDF(citas, fechaEspecifica = null) {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF('landscape', 'mm', 'a4');
 
+    // Ordenar citas por hora (de menor a mayor)
+    const citasOrdenadas = [...citas].sort((a, b) => {
+        return a.hora.localeCompare(b.hora);
+    });
+
     // Título
     const titulo = fechaEspecifica
         ? `REPORTE DE CITAS - ${fechaEspecifica}`
@@ -654,10 +659,10 @@ function generarPDFConJsPDF(citas, fechaEspecifica = null) {
     const fecha = new Date().toLocaleDateString('es-ES');
     const hora = new Date().toLocaleTimeString('es-ES');
     doc.text(`Generado: ${fecha} - ${hora}`, 14, 22);
-    doc.text(`Total: ${citas.length} cita${citas.length !== 1 ? 's' : ''}`, 250, 22);
+    doc.text(`Total: ${citasOrdenadas.length} cita${citasOrdenadas.length !== 1 ? 's' : ''}`, 250, 22);
 
-    // Preparar datos para la tabla
-    const tableData = citas.map(cita => {
+    // Preparar datos para la tabla con colores de sillones
+    const tableData = citasOrdenadas.map(cita => {
         // Convertir fecha de YYYY-MM-DD a DD/MM/YYYY
         let fechaFormateada = cita.fecha;
         if (cita.fecha.includes('-')) {
@@ -674,7 +679,17 @@ function generarPDFConJsPDF(citas, fechaEspecifica = null) {
         ];
     });
 
-    // Generar tabla con autoTable
+    // Obtener colores RGB para los sillones
+    const getSillonColor = (sillon) => {
+        const colores = {
+            'Rojo': [220, 53, 69],       // #DC3545
+            'Azul': [13, 110, 253],      // #0D6EFD
+            'Amarillo': [255, 193, 7]   // #FFC107
+        };
+        return colores[sillon] || [108, 117, 125]; // Gris por defecto
+    };
+
+    // Generar tabla con autoTable y colores en sillones
     doc.autoTable({
         head: [['Fecha', 'Hora', 'Sillón', 'Paciente', 'Email']],
         body: tableData,
@@ -697,6 +712,16 @@ function generarPDFConJsPDF(citas, fechaEspecifica = null) {
             2: { halign: 'center', cellWidth: 25 },  // Sillón
             3: { halign: 'left', cellWidth: 50 },    // Paciente
             4: { halign: 'left', cellWidth: 70 }     // Email
+        },
+        didParseCell: function(data) {
+            // Aplicar color de fondo al sillón (columna 2)
+            if (data.column.index === 2 && data.row.section === 'body') {
+                const sillon = data.cell.text[0];
+                const color = getSillonColor(sillon);
+                data.cell.styles.fillColor = color;
+                data.cell.styles.textColor = sillon === 'Amarillo' ? [0, 0, 0] : [255, 255, 255];
+                data.cell.styles.fontStyle = 'bold';
+            }
         },
         margin: { top: 28, left: 14, right: 14 }
     });
