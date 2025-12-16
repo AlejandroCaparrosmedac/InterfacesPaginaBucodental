@@ -536,4 +536,292 @@ class EmailService
 
         return $texto;
     }
-}
+
+    /**
+     * Envía email de notificación de cambios en la cita
+     * 
+     * @param array $datosCita Datos de la cita modificada
+     * @return bool True si se envió correctamente, false si hubo error
+     */
+    public function enviarModificacionCita($datosCita)
+    {
+        try {
+            // Resetear destinatarios
+            $this->mailer->clearAddresses();
+            $this->mailer->clearAttachments();
+
+            // Destinatario
+            $this->mailer->addAddress($datosCita['email'], $datosCita['nombre']);
+
+            // Asunto
+            $this->mailer->Subject = '📅 Tu Cita Ha Sido Modificada - Higiene Bucodental';
+
+            // Cuerpo del email
+            $this->mailer->isHTML(true);
+            $this->mailer->Body = $this->generarPlantillaModificacion($datosCita);
+            $this->mailer->AltBody = $this->generarTextoPlainModificacion($datosCita);
+
+            // Enviar
+            $resultado = $this->mailer->send();
+
+            if ($resultado) {
+                error_log("Email de modificación enviado correctamente a: " . $datosCita['email']);
+            }
+
+            return $resultado;
+
+        } catch (Exception $e) {
+            error_log("Error enviando email de modificación: " . $this->mailer->ErrorInfo);
+            return false;
+        }
+    }
+
+    /**
+     * Genera la plantilla HTML para el email de modificación
+     */
+    private function generarPlantillaModificacion($datos)
+    {
+        // Formatear fechas
+        $fechaOldObj = new DateTime($datos['fechaAntigua']);
+        $fechaFormateadaOld = $fechaOldObj->format('d/m/Y');
+        $diaSemanaOld = $this->obtenerDiaSemana($fechaOldObj->format('N'));
+
+        $fechaNewObj = new DateTime($datos['fechaNueva']);
+        $fechaFormateadaNew = $fechaNewObj->format('d/m/Y');
+        $diaSemanaNew = $this->obtenerDiaSemana($fechaNewObj->format('N'));
+
+        $html = '
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modificación de Cita</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .header {
+            background: linear-gradient(135deg, #0D6EFD 0%, #0a54d3 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+        .content {
+            padding: 30px;
+        }
+        .cita-comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .cita-box {
+            border-radius: 5px;
+            padding: 15px;
+        }
+        .cita-box.old {
+            background: #f8f9fa;
+            border-left: 4px solid #999;
+        }
+        .cita-box.new {
+            background: #e7f3ff;
+            border-left: 4px solid #0D6EFD;
+        }
+        .cita-box h3 {
+            margin-top: 0;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        .cita-box.old h3 {
+            color: #666;
+        }
+        .cita-box.new h3 {
+            color: #0D6EFD;
+        }
+        .info-row {
+            padding: 8px 0;
+            font-size: 14px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .info-row:last-child {
+            border-bottom: none;
+        }
+        .info-label {
+            font-weight: bold;
+            color: #666;
+            width: 100%;
+            display: block;
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+        .info-value {
+            color: #333;
+            margin-top: 2px;
+        }
+        .sillon-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 15px;
+            color: white;
+            font-weight: bold;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+        .sillon-rojo { background-color: #DC3545; }
+        .sillon-azul { background-color: #0D6EFD; }
+        .sillon-amarillo { background-color: #FFC107; color: black; }
+        .arrow {
+            text-align: center;
+            color: #0D6EFD;
+            font-size: 20px;
+            padding: 10px 0;
+        }
+        .alert {
+            background: #e7f3ff;
+            border: 1px solid #0D6EFD;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .footer {
+            background: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            font-size: 12px;
+            color: #666;
+        }
+        .icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="icon">📅</div>
+            <h1>Tu Cita Ha Sido Modificada</h1>
+        </div>
+        
+        <div class="content">
+            <p>Estimado/a <strong>' . htmlspecialchars($datos['nombre']) . '</strong>,</p>
+            
+            <p>Te informamos que tu cita ha sido modificada. A continuación, te mostramos los cambios realizados:</p>
+            
+            <div class="cita-comparison">
+                <div class="cita-box old">
+                    <h3>❌ ANTERIOR</h3>
+                    <div class="info-row">
+                        <span class="info-label">Fecha:</span>
+                        <span class="info-value">' . $diaSemanaOld . ', ' . $fechaFormateadaOld . '</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Hora:</span>
+                        <span class="info-value">' . $datos['horaAntigua'] . '</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Sillón:</span>
+                        <span class="sillon-badge sillon-' . strtolower($datos['sillonAntiguo']) . '">' . $datos['sillonAntiguo'] . '</span>
+                    </div>
+                </div>
+                
+                <div class="cita-box new">
+                    <h3>✅ NUEVO</h3>
+                    <div class="info-row">
+                        <span class="info-label">Fecha:</span>
+                        <span class="info-value">' . $diaSemanaNew . ', ' . $fechaFormateadaNew . '</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Hora:</span>
+                        <span class="info-value">' . $datos['horaNueva'] . '</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Sillón:</span>
+                        <span class="sillon-badge sillon-' . strtolower($datos['sillonNuevo']) . '">' . $datos['sillonNuevo'] . '</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="alert">
+                <strong>⚠️ Importante:</strong>
+                <ul style="margin: 10px 0 0 0; padding-left: 20px;">
+                    <li>Por favor, asegúrate de confirmar esta nueva fecha y hora en tu calendario</li>
+                    <li>Llega <strong>5 minutos antes</strong> de tu nueva cita</li>
+                    <li>Si tienes alguna pregunta, no dudes en contactarnos</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>Este es un correo automático, por favor no respondas a este mensaje.</p>
+            <p>© ' . date('Y') . ' Higiene Bucodental. Todos los derechos reservados.</p>
+        </div>
+    </div>
+</body>
+</html>';
+
+        return $html;
+    }
+
+    /**
+     * Genera versión de texto plano para el email de modificación
+     */
+    private function generarTextoPlainModificacion($datos)
+    {
+        $fechaOldObj = new DateTime($datos['fechaAntigua']);
+        $fechaFormateadaOld = $fechaOldObj->format('d/m/Y');
+        $diaSemanaOld = $this->obtenerDiaSemana($fechaOldObj->format('N'));
+
+        $fechaNewObj = new DateTime($datos['fechaNueva']);
+        $fechaFormateadaNew = $fechaNewObj->format('d/m/Y');
+        $diaSemanaNew = $this->obtenerDiaSemana($fechaNewObj->format('N'));
+
+        $texto = "MODIFICACIÓN DE CITA - HIGIENE BUCODENTAL\n\n";
+        $texto .= "Estimado/a " . $datos['nombre'] . ",\n\n";
+        $texto .= "Tu cita ha sido modificada.\n\n";
+        
+        $texto .= "CAMBIOS REALIZADOS:\n";
+        $texto .= "====================================\n\n";
+        
+        $texto .= "ANTERIOR:\n";
+        $texto .= "------------------------\n";
+        $texto .= "Fecha: " . $diaSemanaOld . ", " . $fechaFormateadaOld . "\n";
+        $texto .= "Hora: " . $datos['horaAntigua'] . "\n";
+        $texto .= "Sillón: " . $datos['sillonAntiguo'] . "\n\n";
+        
+        $texto .= "NUEVO:\n";
+        $texto .= "------------------------\n";
+        $texto .= "Fecha: " . $diaSemanaNew . ", " . $fechaFormateadaNew . "\n";
+        $texto .= "Hora: " . $datos['horaNueva'] . "\n";
+        $texto .= "Sillón: " . $datos['sillonNuevo'] . "\n\n";
+        
+        $texto .= "IMPORTANTE:\n";
+        $texto .= "- Por favor, asegúrate de confirmar esta nueva fecha y hora en tu calendario\n";
+        $texto .= "- Llega 5 minutos antes de tu nueva cita\n";
+        $texto .= "- Si tienes alguna pregunta, no dudes en contactarnos\n\n";
+        
+        $texto .= "Saludos cordiales,\n";
+        $texto .= "Equipo de Higiene Bucodental\n\n";
+        $texto .= "---\n";
+        $texto .= "Este es un correo automático, por favor no respondas a este mensaje.\n";
+
+        return $texto;
+    }}

@@ -294,6 +294,47 @@
             transform: translateY(0);
         }
 
+        .btn-editar {
+            background-color: #0d6efd;
+            border-color: #0d6efd;
+            color: white;
+            padding: 0.4rem 0.8rem;
+            font-size: 0.85rem;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 1px solid #0d6efd;
+            margin-right: 0.5rem;
+        }
+
+        .btn-editar:hover {
+            background-color: #0a54d3;
+            border-color: #0a54d3;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(13, 110, 253, 0.3);
+        }
+
+        .btn-editar:active {
+            transform: translateY(0);
+        }
+
+        .sillon-btn-editar {
+            transition: all 0.3s ease;
+            border: 3px solid transparent;
+            border-radius: 6px;
+        }
+
+        .sillon-btn-editar:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .sillon-btn-editar.active {
+            border: 3px solid #333;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            transform: scale(1.05);
+        }
+
         .stats-container {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -360,37 +401,6 @@
             height: 15px;
         }
 
-        /* Botones de estado */
-        .btn-estado {
-            min-width: 110px;
-            font-weight: 600;
-            border: none;
-            transition: all 0.2s ease;
-            font-size: 0.85rem;
-        }
-
-        .btn-estado.pendiente {
-            background-color: #ffc107;
-            color: #000;
-        }
-
-        .btn-estado.pendiente:hover {
-            background-color: #e0a800;
-            transform: translateY(-1px);
-            box-shadow: 0 2px 6px rgba(255, 193, 7, 0.4);
-        }
-
-        .btn-estado.completado {
-            background-color: #28a745;
-            color: #fff;
-        }
-
-        .btn-estado.completado:hover {
-            background-color: #218838;
-            transform: translateY(-1px);
-            box-shadow: 0 2px 6px rgba(40, 167, 69, 0.4);
-        }
-
         /* Fila completada */
         .cita-row.completada {
             background-color: #d4edda !important;
@@ -442,13 +452,7 @@
                 padding: 0.2rem 0.5rem;
                 font-size: 0.7rem;
             }
-
-            /* Botones de estado más compactos */
-            .btn-estado {
-                min-width: 70px;
-                font-size: 0.7rem;
-                padding: 0.3rem 0.5rem;
-            }
+            /* Botones más compactos en mobile */
 
             /* Botón eliminar más pequeño */
             .btn-eliminar {
@@ -708,7 +712,6 @@
                                 <th>Sillón</th>
                                 <th>Nombre</th>
                                 <th>Correo</th>
-                                <th>Estado</th>
                                 <th>Acciones</th>
                             </tr>
                         </thead>
@@ -897,6 +900,95 @@
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                     <button type="button" class="btn btn-danger" id="btnConfirmarEliminarTodas">
                         <i class="bi bi-trash-fill"></i> Sí, Eliminar Todas
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Edición de Cita -->
+    <div class="modal fade" id="modalEditarCita" tabindex="-1" aria-labelledby="modalEditarCitaLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="modalEditarCitaLabel">
+                        <i class="bi bi-pencil-square"></i> Editar Cita
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formEditarCita">
+                        <div class="mb-3">
+                            <label for="editarNombre" class="form-label">Nombre</label>
+                            <input type="text" class="form-control" id="editarNombre" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editarEmail" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="editarEmail" readonly>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="editarFecha" class="form-label">
+                                        <i class="bi bi-calendar-event"></i> Fecha
+                                    </label>
+                                    <input type="date" class="form-control" id="editarFecha" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="editarHora" class="form-label">
+                                        <i class="bi bi-clock"></i> Hora
+                                    </label>
+                                    <select class="form-select" id="editarHora" required>
+                                        <option value="" selected disabled>Elige una hora</option>
+                                        <option value="15:15">15:15</option>
+                                        <option value="15:55">15:55</option>
+                                        <option value="16:35">16:35</option>
+                                        <option value="17:15">17:15</option>
+                                        <option value="17:55">17:55</option>
+                                        <option value="18:35">18:35</option>
+                                        <option value="19:15">19:15</option>
+                                        <option value="19:55">19:55</option>
+                                        <option value="20:35">20:35</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Sillón -->
+                        <div class="mb-3">
+                            <label class="form-label">
+                                <i class="bi bi-hospital"></i> Selecciona un sillón
+                            </label>
+                            <div class="d-flex gap-3 justify-content-center">
+                                <button type="button" class="btn sillon-btn-editar" id="editarSillonRojo"
+                                    style="background-color: #DC3545; color: white; width: 120px; font-weight: bold;">
+                                    <i class="bi bi-check-circle"></i> Rojo
+                                </button>
+                                <button type="button" class="btn sillon-btn-editar" id="editarSillonAzul"
+                                    style="background-color: #0D6EFD; color: white; width: 120px; font-weight: bold;">
+                                    <i class="bi bi-check-circle"></i> Azul
+                                </button>
+                                <button type="button" class="btn sillon-btn-editar" id="editarSillonAmarillo"
+                                    style="background-color: #FFC107; color: black; width: 120px; font-weight: bold;">
+                                    <i class="bi bi-check-circle"></i> Amarillo
+                                </button>
+                            </div>
+                            <input type="hidden" id="editarSillon" required>
+                        </div>
+                        
+                        <div class="alert alert-info mb-0">
+                            <small><i class="bi bi-info-circle"></i> Se enviará un correo al paciente notificando los cambios realizados.</small>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="btnConfirmarEditar">
+                        <i class="bi bi-check-circle"></i> Guardar Cambios
                     </button>
                 </div>
             </div>

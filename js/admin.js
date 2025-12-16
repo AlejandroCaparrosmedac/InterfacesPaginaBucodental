@@ -160,12 +160,6 @@ function mostrarCitasEnTabla(citas) {
         return;
     }
 
-    // Migrar datos: añadir campo 'estado' si no existe
-    citas = citas.map(cita => ({
-        ...cita,
-        estado: cita.estado || 'pendiente'
-    }));
-
     // Ordenar citas por fecha y hora
     citas.sort((a, b) => {
         const dateA = new Date(a.fecha);
@@ -226,14 +220,9 @@ function mostrarCitasEnTabla(citas) {
             const fechaSimple = fechaObj.toLocaleDateString('es-ES');
             const esFilaPar = index % 2 === 0;
             const colorFondo = esFilaPar ? '#f8f9fa' : '#ffffff';
-            const esPresente = cita.estado === 'presente';
-            const clasePresente = esPresente ? 'presente' : '';
-            const iconoEstado = esPresente ? 'bi-check-circle-fill' : 'bi-clock';
-            const textoEstado = esPresente ? 'Presente' : 'Pendiente';
-            const claseEstado = esPresente ? 'presente' : 'pendiente';
 
             htmlCompleto += `
-            <tr class="cita-row ${clasePresente}" data-fecha="${fecha}" data-id="${cita.id}" style="background-color: ${colorFondo}; display: none;">
+            <tr class="cita-row" data-fecha="${fecha}" data-id="${cita.id}" style="background-color: ${colorFondo}; display: none;">
                 <td style="padding-left: 30px;"><strong>${fechaSimple}</strong></td>
                 <td><strong style="color: #2A6FB6; font-size: 1.05rem;">${cita.hora}</strong></td>
                 <td>
@@ -244,11 +233,9 @@ function mostrarCitasEnTabla(citas) {
                 <td><strong>${cita.nombre}</strong></td>
                 <td><small>${cita.email}</small></td>
                 <td>
-                    <button type="button" class="btn btn-sm btn-estado ${claseEstado}" data-id="${cita.id}" onclick="cambiarEstadoCita(${cita.id}, '${cita.estado}')" title="Cambiar estado">
-                        <i class="bi ${iconoEstado}"></i> ${textoEstado}
+                    <button type="button" class="btn btn-sm btn-editar" data-id="${cita.id}" title="Editar cita">
+                        <i class="bi bi-pencil"></i> Editar
                     </button>
-                </td>
-                <td>
                     <button type="button" class="btn btn-sm btn-eliminar" data-id="${cita.id}" title="Eliminar cita">
                         <i class="bi bi-trash"></i> Eliminar
                     </button>
@@ -268,6 +255,14 @@ function mostrarCitasEnTabla(citas) {
     });
 
     cuerpoTabla.innerHTML = htmlCompleto;
+
+    // Agregar event listeners a los botones de editar
+    document.querySelectorAll('.btn-editar').forEach(boton => {
+        boton.addEventListener('click', function () {
+            const id = parseInt(this.getAttribute('data-id'));
+            mostrarModalEditarCita(id);
+        });
+    });
 
     // Agregar event listeners a los botones de eliminar
     document.querySelectorAll('.btn-eliminar').forEach(boton => {
@@ -371,6 +366,132 @@ function mostrarModalEliminarCita(id) {
     // Mostrar modal
     const modal = new bootstrap.Modal(document.getElementById('modalEliminarCita'));
     modal.show();
+}
+
+/**
+ * Muestra modal para editar una cita
+ */
+function mostrarModalEditarCita(id) {
+    // Obtener la cita del DOM
+    const fila = document.querySelector(`button[data-id="${id}"].btn-editar`).closest('tr');
+    const fecha = fila.querySelector('td:nth-child(1)').textContent.trim();
+    const hora = fila.querySelector('td:nth-child(2)').textContent.trim();
+    const sillon = fila.querySelector('td:nth-child(3)').textContent.trim();
+    const nombre = fila.querySelector('td:nth-child(4)').textContent.trim();
+    const email = fila.querySelector('td:nth-child(5)').textContent.trim();
+
+    // Cargar datos en el formulario
+    document.getElementById('editarNombre').value = nombre;
+    document.getElementById('editarEmail').value = email;
+    document.getElementById('editarFecha').value = fecha;
+    document.getElementById('editarHora').value = hora;
+    document.getElementById('editarSillon').value = sillon;
+
+    // Configurar botones de sillón
+    configurarBotonesSillonEditar(sillon);
+
+    // Remover event listeners anteriores del botón confirmar
+    const btnConfirmar = document.getElementById('btnConfirmarEditar');
+    const newBtnConfirmar = btnConfirmar.cloneNode(true);
+    btnConfirmar.parentNode.replaceChild(newBtnConfirmar, btnConfirmar);
+
+    // Agregar nuevo event listener
+    document.getElementById('btnConfirmarEditar').addEventListener('click', function () {
+        guardarCambiosCita(id);
+    });
+
+    // Mostrar modal
+    const modal = new bootstrap.Modal(document.getElementById('modalEditarCita'));
+    modal.show();
+}
+
+/**
+ * Configura los botones de sillón en el modal de edición
+ */
+function configurarBotonesSillonEditar(sillonActual) {
+    const botones = {
+        'editarSillonRojo': 'Rojo',
+        'editarSillonAzul': 'Azul',
+        'editarSillonAmarillo': 'Amarillo'
+    };
+
+    Object.entries(botones).forEach(([id, valor]) => {
+        const boton = document.getElementById(id);
+        
+        // Remover listeners anteriores clonando el elemento
+        const nuevoBoton = boton.cloneNode(true);
+        boton.parentNode.replaceChild(nuevoBoton, boton);
+
+        // Reseleccionar el botón
+        const btnActualizado = document.getElementById(id);
+
+        // Agregar listener
+        btnActualizado.addEventListener('click', function (e) {
+            e.preventDefault();
+
+            // Remover active de todos
+            document.querySelectorAll('.sillon-btn-editar').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // Agregar active al seleccionado
+            this.classList.add('active');
+
+            // Guardar valor en input oculto
+            document.getElementById('editarSillon').value = valor;
+        });
+
+        // Marcar como active si es el sillón actual
+        if (valor === sillonActual) {
+            btnActualizado.classList.add('active');
+        }
+    });
+}
+
+/**
+ * Guarda los cambios de una cita
+ */
+async function guardarCambiosCita(id) {
+    try {
+        const nuevaFecha = document.getElementById('editarFecha').value;
+        const nuevaHora = document.getElementById('editarHora').value;
+        const nuevoSillon = document.getElementById('editarSillon').value;
+
+        if (!nuevaFecha || !nuevaHora || !nuevoSillon) {
+            mostrarAlertaAdmin('warning', 'Campos incompletos', 'Por favor, completa todos los campos.');
+            return;
+        }
+
+        const respuesta = await fetch(`${ADMIN_CONFIG.apiUrl}?action=modificar_cita&id=${id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                fecha: nuevaFecha,
+                hora: nuevaHora,
+                sillon: nuevoSillon
+            })
+        });
+
+        const datos = await respuesta.json();
+
+        if (datos.success) {
+            mostrarAlertaAdmin('success', 'Cita modificada', datos.message);
+            // Recargar citas
+            await cargarCitas();
+            // Cerrar modal
+            const modalInstance = bootstrap.Modal.getInstance(document.getElementById('modalEditarCita'));
+            if (modalInstance) {
+                modalInstance.hide();
+            }
+        } else {
+            mostrarAlertaAdmin('error', 'Error', datos.message || 'No se pudo modificar la cita.');
+        }
+    } catch (error) {
+        console.error('Error en guardarCambiosCita:', error);
+        mostrarAlertaAdmin('error', 'Error', 'Error de conexión con el servidor.');
+    }
 }
 
 // ============================================
@@ -549,14 +670,13 @@ function generarPDFConJsPDF(citas, fechaEspecifica = null) {
             cita.hora,
             cita.sillon || '-',
             cita.nombre,
-            cita.email,
-            cita.estado === 'presente' ? 'Presente' : 'Pendiente'
+            cita.email
         ];
     });
 
     // Generar tabla con autoTable
     doc.autoTable({
-        head: [['Fecha', 'Hora', 'Sillón', 'Paciente', 'Email', 'Estado']],
+        head: [['Fecha', 'Hora', 'Sillón', 'Paciente', 'Email']],
         body: tableData,
         startY: 28,
         theme: 'striped',
@@ -576,20 +696,7 @@ function generarPDFConJsPDF(citas, fechaEspecifica = null) {
             1: { halign: 'center', cellWidth: 22 },  // Hora
             2: { halign: 'center', cellWidth: 25 },  // Sillón
             3: { halign: 'left', cellWidth: 50 },    // Paciente
-            4: { halign: 'left', cellWidth: 70 },    // Email
-            5: { halign: 'center', cellWidth: 28 }   // Estado
-        },
-        didParseCell: function (data) {
-            // Colorear estado
-            if (data.column.index === 5 && data.section === 'body') {
-                const estado = data.cell.raw;
-                if (estado === 'Presente') {
-                    data.cell.styles.textColor = [40, 167, 69]; // Verde
-                    data.cell.styles.fontStyle = 'bold';
-                } else {
-                    data.cell.styles.textColor = [255, 193, 7]; // Amarillo oscuro
-                }
-            }
+            4: { halign: 'left', cellWidth: 70 }     // Email
         },
         margin: { top: 28, left: 14, right: 14 }
     });
@@ -908,51 +1015,6 @@ function toggleGrupoFecha(fecha) {
     });
 }
 
-
-/**
- * Cambia el estado de una cita entre pendiente y presente
- */
-async function cambiarEstadoCita(id, estadoActual) {
-    const nuevoEstado = estadoActual === 'pendiente' ? 'presente' : 'pendiente';
-
-    try {
-        const respuesta = await fetch(`${ADMIN_CONFIG.apiUrl}?action=actualizar_estado&id=${id}&estado=${nuevoEstado}`, {
-            method: 'PUT'
-        });
-
-        const datos = await respuesta.json();
-
-        if (datos.success) {
-            // Actualizar UI sin recargar toda la tabla
-            const fila = document.querySelector(`.cita-row[data-id="${id}"]`);
-            const boton = fila.querySelector('.btn-estado');
-
-            if (nuevoEstado === 'presente') {
-                fila.classList.add('presente');
-                boton.classList.remove('pendiente');
-                boton.classList.add('presente');
-                boton.innerHTML = '<i class="bi bi-check-circle-fill"></i> Presente';
-            } else {
-                fila.classList.remove('presente');
-                boton.classList.remove('presente');
-                boton.classList.add('pendiente');
-                boton.innerHTML = '<i class="bi bi-clock"></i> Pendiente';
-            }
-
-            // Actualizar el atributo onclick del botón
-            boton.setAttribute('onclick', `cambiarEstadoCita(${id}, '${nuevoEstado}')`);
-
-            // Recargar citas para actualizar estadísticas
-            await cargarCitas();
-        } else {
-            mostrarAlertaAdmin('error', 'Error', datos.message || 'No se pudo cambiar el estado.');
-        }
-    } catch (error) {
-        console.error('Error en cambiarEstadoCita:', error);
-        mostrarAlertaAdmin('error', 'Error', 'Error de conexión con el servidor.');
-    }
-}
-
 /**
  * Descarga el PDF de las citas de un día específico
  */
@@ -1244,7 +1306,4 @@ mostrarPanelAdmin = function (usuario, nombre) {
 
 // Exportar nuevas funciones globales
 window.toggleGrupoFecha = toggleGrupoFecha;
-window.cambiarEstadoCita = cambiarEstadoCita;
-window.descargarPDFPorDia = descargarPDFPorDia;
-window.desvetarDia = desvetarDia;
-window.eliminarTodasCitasDia = eliminarTodasCitasDia;
+

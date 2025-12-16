@@ -79,6 +79,14 @@ try {
             }
             break;
 
+        case 'modificar_cita':
+            if ($metodo === 'PUT') {
+                $id = isset($_GET['id']) ? intval($_GET['id']) : 0;
+                $datos = json_decode(file_get_contents("php://input"), true);
+                modificarCita($conexion, $id, $datos);
+            }
+            break;
+
         case 'eliminar_cita':
             if ($metodo === 'DELETE') {
                 $id = isset($_GET['id']) ? intval($_GET['id']) : 0;
@@ -464,6 +472,63 @@ function eliminarCita($conexion, $id, $motivo = '')
         $respuesta = ['success' => true, 'message' => 'Cita eliminada correctamente y notificación enviada al paciente'];
     } else {
         $respuesta = ['success' => false, 'message' => 'Error al eliminar cita'];
+    }
+
+    $stmt->close();
+}
+
+function modificarCita($conexion, $id, $datos)
+{
+    global $respuesta;
+
+    if ($id <= 0) {
+        $respuesta = ['success' => false, 'message' => 'ID inválido'];
+        return;
+    }
+
+    $fecha = isset($datos['fecha']) ? trim($datos['fecha']) : '';
+    $hora = isset($datos['hora']) ? trim($datos['hora']) : '';
+    $sillon = isset($datos['sillon']) ? trim($datos['sillon']) : '';
+
+    if (empty($fecha) || empty($hora) || empty($sillon)) {
+        $respuesta = ['success' => false, 'message' => 'Faltan datos requeridos'];
+        return;
+    }
+
+    // Obtener los datos actuales de la cita
+    $stmt = $conexion->prepare("SELECT nombre, email, fecha, hora, sillon FROM citas WHERE id = ?");
+    $stmt->bind_param("i", $id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $citaActual = $result->fetch_assoc();
+    $stmt->close();
+
+    if (!$citaActual) {
+        $respuesta = ['success' => false, 'message' => 'Cita no encontrada'];
+        return;
+    }
+
+    // Actualizar la cita
+    $stmt = $conexion->prepare("UPDATE citas SET fecha = ?, hora = ?, sillon = ? WHERE id = ?");
+    $stmt->bind_param("sssi", $fecha, $hora, $sillon, $id);
+
+    if ($stmt->execute()) {
+        // Enviar email de notificación de cambios
+        $emailService = new EmailService();
+        $emailService->enviarModificacionCita([
+            'nombre' => $citaActual['nombre'],
+            'email' => $citaActual['email'],
+            'fechaAntigua' => $citaActual['fecha'],
+            'horaAntigua' => $citaActual['hora'],
+            'sillonAntiguo' => $citaActual['sillon'],
+            'fechaNueva' => $fecha,
+            'horaNueva' => $hora,
+            'sillonNuevo' => $sillon
+        ]);
+
+        $respuesta = ['success' => true, 'message' => 'Cita modificada correctamente y notificación enviada al paciente'];
+    } else {
+        $respuesta = ['success' => false, 'message' => 'Error al modificar cita'];
     }
 
     $stmt->close();
