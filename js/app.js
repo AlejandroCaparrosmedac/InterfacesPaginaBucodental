@@ -287,10 +287,10 @@ function validarEmail() {
         return false;
     }
 
-    // Aceptar tanto @alu.medac.es como @medac.es
-    const regexEmail = /^[^\s@]+@(alu\.)?medac\.es$/;
+    // Aceptar @alu.medac.es, @medac.es y @doc.medac.es
+    const regexEmail = /^[^\s@]+@(alu\.|doc\.)?medac\.es$/;
     if (!regexEmail.test(email)) {
-        errorDiv.textContent = 'Solo se aceptan emails de @medac.es o @alu.medac.es';
+        errorDiv.textContent = 'Solo se aceptan emails de @medac.es, @alu.medac.es o @doc.medac.es';
         document.getElementById('emailCita').classList.add('is-invalid');
         return false;
     }
@@ -578,10 +578,10 @@ async function buscarCita() {
         return;
     }
 
-    // Validar que sea un email de @medac.es o @alu.medac.es
-    const regexEmail = /^[^\s@]+@(alu\.)?medac\.es$/;
+    // Validar que sea un email de @medac.es, @alu.medac.es o @doc.medac.es
+    const regexEmail = /^[^\s@]+@(alu\.|doc\.)?medac\.es$/;
     if (!regexEmail.test(email)) {
-        resultadoDiv.innerHTML = '<div class="alert alert-danger">Solo se aceptan emails de @medac.es o @alu.medac.es</div>';
+        resultadoDiv.innerHTML = '<div class="alert alert-danger">Solo se aceptan emails de @medac.es, @alu.medac.es o @doc.medac.es</div>';
         return;
     }
 

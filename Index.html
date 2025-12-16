@@ -174,27 +174,109 @@
 
         <hr class="my-5">
 
-        <!-- Sección de Consejos (mantener) -->
-        <div class="text-center my-5">
-            <h2 class="mb-4 " id="tituloConsejos">Importancia de la higiene bucodental</h2>
-            <p class="lead" id="parrafoConsejos">Mantener una buena higiene bucodental es esencial para prevenir
-                enfermedades dentales y mantener una sonrisa saludable. Una correcta rutina de cuidado dental no solo
-                mejora la apariencia de los dientes, sino que también contribuye a la salud general del cuerpo.</p>
-            <section id="seccionConsejos">
-                <h2 class="mb-4  lead fw-bold" id="titulo2Consejos">Consejos para una buena higiene bucodental</h2>
-                <ul class="list-group">
-                    <li class="list-group-item lead">Cepíllate los dientes al menos dos veces al día con una pasta
-                        dental con flúor.</li>
-                    <li class="list-group-item lead">Usa hilo dental diariamente para eliminar la placa entre los
-                        dientes.</li>
-                    <li class="list-group-item lead">Limita el consumo de alimentos y bebidas azucaradas.</li>
-                    <li class="list-group-item lead">Visita a tu dentista regularmente para chequeos y limpiezas
-                        profesionales.</li>
-                    <li class="list-group-item lead">Evita el tabaco, ya que puede causar enfermedades de las encías y
-                        cáncer oral.</li>
-                </ul>
-            </section>
-        </div><br><br>
+        <!-- Sección de Consejos -->
+        <div class="container my-5">
+            <div class="text-center mb-5">
+                <h2 class="mb-4" id="tituloConsejos">
+                    <i class="bi bi-heart-pulse"></i> Importancia de la higiene bucodental
+                </h2>
+                <p class="lead" id="parrafoConsejos">Mantener una buena higiene bucodental es esencial para prevenir
+                    enfermedades dentales y mantener una sonrisa saludable. Una correcta rutina de cuidado dental no solo
+                    mejora la apariencia de los dientes, sino que también contribuye a la salud general del cuerpo.</p>
+            </div>
+
+            <div class="mb-5">
+                <h3 class="text-center mb-4">
+                    <i class="bi bi-lightbulb"></i> Consejos
+                </h3>
+
+                <!-- Accordion de Recomendaciones -->
+                <div class="accordion" id="accordionConsejos">
+                    <!-- Recomendaciones Antes de la Cita -->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#collapseAntesRecomendaciones" aria-expanded="true"
+                                aria-controls="collapseAntesRecomendaciones">
+                                <i class="bi bi-calendar-check"></i>
+                                <strong class="ms-2">Antes de la cita</strong>
+                            </button>
+                        </h2>
+                        <div id="collapseAntesRecomendaciones" class="accordion-collapse collapse show"
+                            data-bs-parent="#accordionConsejos">
+                            <div class="accordion-body">
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item">
+                                        <i class="bi bi-tooth"></i>
+                                        <strong>Cepíllate los dientes</strong> al menos dos veces al día con una pasta
+                                        dental con flúor.
+                                    </li>
+                                    <li class="list-group-item">
+                                        <i class="bi bi-dash-circle"></i>
+                                        <strong>Usa hilo dental</strong> diariamente para eliminar la placa entre los
+                                        dientes.
+                                    </li>
+                                    <li class="list-group-item">
+                                        <i class="bi bi-cup-straw"></i>
+                                        <strong>Limita el consumo</strong> de alimentos y bebidas azucaradas.
+                                    </li>
+                                    <li class="list-group-item">
+                                        <i class="bi bi-hospital"></i>
+                                        <strong>Visita regularmente</strong> a tu dentista para chequeos y limpiezas
+                                        profesionales.
+                                    </li>
+                                    <li class="list-group-item">
+                                        <i class="bi bi-exclamation-circle"></i>
+                                        <strong>Evita el tabaco</strong>, ya que puede causar enfermedades de las encías y
+                                        cáncer oral.
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recomendaciones Después de la Cita -->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#collapseDespuesRecomendaciones" aria-expanded="false"
+                                aria-controls="collapseDespuesRecomendaciones">
+                                <i class="bi bi-check-circle"></i>
+                                <strong class="ms-2">Después de la cita</strong>
+                            </button>
+                        </h2>
+                        <div id="collapseDespuesRecomendaciones" class="accordion-collapse collapse"
+                            data-bs-parent="#accordionConsejos">
+                            <div class="accordion-body">
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item">
+                                        <i class="bi bi-calendar-x"></i>
+                                        <strong>Evita alimentos duros</strong> durante las primeras 24 horas después del tratamiento.
+                                    </li>
+                                    <li class="list-group-item">
+                                        <i class="bi bi-thermometer"></i>
+                                        <strong>No consumas alimentos muy calientes</strong> en las siguientes horas.
+                                    </li>
+                                    <li class="list-group-item">
+                                        <i class="bi bi-droplet"></i>
+                                        <strong>Enjuágate la boca</strong> con agua tibia y sal para mantener la higiene.
+                                    </li>
+                                    <li class="list-group-item">
+                                        <i class="bi bi-pill"></i>
+                                        <strong>Sigue las indicaciones</strong> del dentista respecto a medicamentos o enjuagues especiales.
+                                    </li>
+                                    <li class="list-group-item">
+                                        <i class="bi bi-calendar"></i>
+                                        <strong>Mantén una rutina regular</strong> de cuidado dental después de tu cita.
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <hr>
 
         </section>
