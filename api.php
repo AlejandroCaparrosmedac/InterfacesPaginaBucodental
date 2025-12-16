@@ -82,7 +82,9 @@ try {
         case 'eliminar_cita':
             if ($metodo === 'DELETE') {
                 $id = isset($_GET['id']) ? intval($_GET['id']) : 0;
-                eliminarCita($conexion, $id);
+                $datos = json_decode(file_get_contents("php://input"), true);
+                $motivo = isset($datos['motivo']) ? $datos['motivo'] : '';
+                eliminarCita($conexion, $id, $motivo);
             }
             break;
 
@@ -422,7 +424,7 @@ function actualizarCita($conexion, $datos)
     $stmt->close();
 }
 
-function eliminarCita($conexion, $id)
+function eliminarCita($conexion, $id, $motivo = '')
 {
     global $respuesta;
 
@@ -431,11 +433,35 @@ function eliminarCita($conexion, $id)
         return;
     }
 
+    // Primero, obtener los datos de la cita antes de eliminarla
+    $stmt = $conexion->prepare("SELECT nombre, email, fecha, hora FROM citas WHERE id = ?");
+    $stmt->bind_param("i", $id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $cita = $result->fetch_assoc();
+    $stmt->close();
+
+    if (!$cita) {
+        $respuesta = ['success' => false, 'message' => 'Cita no encontrada'];
+        return;
+    }
+
+    // Ahora eliminar la cita
     $stmt = $conexion->prepare("DELETE FROM citas WHERE id = ?");
     $stmt->bind_param("i", $id);
 
     if ($stmt->execute()) {
-        $respuesta = ['success' => true, 'message' => 'Cita eliminada correctamente'];
+        // Enviar email de notificación de cancelación
+        $emailService = new EmailService();
+        $emailService->enviarCancelacionCita([
+            'nombre' => $cita['nombre'],
+            'email' => $cita['email'],
+            'fecha' => $cita['fecha'],
+            'hora' => $cita['hora'],
+            'motivo' => $motivo
+        ]);
+
+        $respuesta = ['success' => true, 'message' => 'Cita eliminada correctamente y notificación enviada al paciente'];
     } else {
         $respuesta = ['success' => false, 'message' => 'Error al eliminar cita'];
     }

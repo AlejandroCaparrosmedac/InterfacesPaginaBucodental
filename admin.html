@@ -804,6 +804,17 @@
                 </div>
                 <div class="modal-body">
                     <p id="mensajeEliminarCita">¿Estás seguro de que deseas eliminar esta cita?</p>
+                    <div class="mt-3">
+                        <label for="motivoEliminacion" class="form-label">
+                            <i class="bi bi-info-circle"></i> Motivo de la Eliminación
+                        </label>
+                        <textarea class="form-control" id="motivoEliminacion" rows="3" 
+                            placeholder="Ingresa el motivo por el cual se elimina esta cita. Este motivo será enviado al correo del paciente."
+                            required></textarea>
+                        <small class="text-muted d-block mt-1">
+                            Este motivo será incluido en el correo de notificación al paciente.
+                        </small>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>

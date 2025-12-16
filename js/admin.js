@@ -302,8 +302,22 @@ function actualizarEstadisticas(citas) {
  */
 async function eliminarCita(id) {
     try {
+        // Obtener el motivo de eliminación
+        const motivo = document.getElementById('motivoEliminacion').value;
+        
+        if (!motivo.trim()) {
+            mostrarAlertaAdmin('warning', 'Campo requerido', 'Por favor, ingresa un motivo de eliminación.');
+            return;
+        }
+
         const respuesta = await fetch(`${ADMIN_CONFIG.apiUrl}?action=eliminar_cita&id=${id}`, {
-            method: 'DELETE'
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                motivo: motivo
+            })
         });
 
         const datos = await respuesta.json();
@@ -340,6 +354,9 @@ function mostrarModalEliminarCita(id) {
 
     // Actualizar mensaje del modal
     document.getElementById('mensajeEliminarCita').textContent = mensaje;
+    
+    // Limpiar el textarea del motivo
+    document.getElementById('motivoEliminacion').value = '';
 
     // Remover event listeners anteriores
     const btnConfirmar = document.getElementById('btnConfirmarEliminar');
